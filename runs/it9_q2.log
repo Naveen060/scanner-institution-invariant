@@ -1,0 +1,70 @@
+{"holdout": "UK", "method": "sidl_full", "seed": 0, "auroc": 0.8223289315726292, "acc": 0.7575757575757576, "sec": 77.1}
+{"holdout": "UK", "method": "sidl_full", "seed": 1, "auroc": 0.7406962785114046, "acc": 0.7424242424242424, "sec": 75.2}
+{"holdout": "Australia", "method": "sidl_full", "seed": 0, "auroc": 0.4104938271604938, "acc": 0.5166666666666667, "sec": 79.7}
+{"holdout": "Australia", "method": "sidl_full", "seed": 1, "auroc": 0.4197530864197531, "acc": 0.9, "sec": 78.7}
+{"holdout": "Other", "method": "sidl_full", "seed": 0, "auroc": 0.64175506268081, "acc": 0.6183574879227053, "sec": 59.2}
+{"holdout": "Other", "method": "sidl_full", "seed": 1, "auroc": 0.6108003857280617, "acc": 0.6376811594202898, "sec": 59.9}
+{"holdout": "Unknown", "method": "sidl_full", "seed": 0, "auroc": 0.8309409888357256, "acc": 0.7692307692307693, "sec": 72.3}
+{"holdout": "Unknown", "method": "sidl_full", "seed": 1, "auroc": 0.8421052631578947, "acc": 0.7884615384615384, "sec": 73.4}
+{"holdout": "UK", "method": "sidl_phys", "seed": 0, "auroc": 0.8679471788715487, "acc": 0.803030303030303, "sec": 74.5}
+{"holdout": "UK", "method": "sidl_phys", "seed": 1, "auroc": 0.7947178871548619, "acc": 0.7575757575757576, "sec": 73.7}
+{"holdout": "Australia", "method": "sidl_phys", "seed": 0, "auroc": 0.6790123456790124, "acc": 0.25, "sec": 71.4}
+{"holdout": "Australia", "method": "sidl_phys", "seed": 1, "auroc": 0.6697530864197531, "acc": 0.5666666666666667, "sec": 73.6}
+{"holdout": "Other", "method": "sidl_phys", "seed": 0, "auroc": 0.6726133076181292, "acc": 0.6570048309178744, "sec": 61.2}
+{"holdout": "Other", "method": "sidl_phys", "seed": 1, "auroc": 0.6280617164898747, "acc": 0.6038647342995169, "sec": 60.7}
+{"holdout": "Unknown", "method": "sidl_phys", "seed": 0, "auroc": 0.7129186602870814, "acc": 0.6923076923076923, "sec": 74.2}
+{"holdout": "Unknown", "method": "sidl_phys", "seed": 1, "auroc": 0.8277511961722488, "acc": 0.8076923076923077, "sec": 74.5}
+Australia 0 Actualmed 30.2
+Australia 0 China 33.1
+Australia 0 Figure1 33.4
+Australia 0 Hannover-DE 33.9
+Australia 0 Italy 34.0
+Australia 0 Other 26.3
+Australia 0 Spain 33.2
+Australia 0 UK 32.5
+Australia 0 Unknown 33.8
+Australia 1 Actualmed 28.4
+Australia 1 China 32.7
+Australia 1 Figure1 37.0
+Australia 1 Hannover-DE 33.9
+Australia 1 Italy 29.6
+Australia 1 Other 26.3
+Australia 1 Spain 31.9
+Australia 1 UK 33.6
+Australia 1 Unknown 32.8
+Other 0 Actualmed 20.4
+Other 0 Australia 25.5
+Other 0 China 26.0
+Other 0 Figure1 27.9
+Other 0 Hannover-DE 24.0
+Other 0 Italy 25.8
+Other 0 Spain 25.8
+Other 0 UK 23.5
+Other 0 Unknown 26.4
+Other 1 Actualmed 21.2
+Other 1 Australia 25.8
+Other 1 China 26.3
+Other 1 Figure1 26.8
+Other 1 Hannover-DE 24.1
+Other 1 Italy 23.4
+Other 1 Spain 25.1
+Other 1 UK 22.9
+Other 1 Unknown 29.1
+Unknown 0 Actualmed 26.8
+Unknown 0 Australia 32.4
+Unknown 0 China 30.6
+Unknown 0 Figure1 35.3
+Unknown 0 Hannover-DE 31.9
+Unknown 0 Italy 32.0
+Unknown 0 Other 25.7
+Unknown 0 Spain 31.9
+Unknown 0 UK 32.7
+Unknown 1 Actualmed 25.4
+Unknown 1 Australia 32.2
+Unknown 1 China 33.1
+Unknown 1 Figure1 34.4
+Unknown 1 Hannover-DE 31.9
+Unknown 1 Italy 29.1
+Unknown 1 Other 27.8
+Unknown 1 Spain 32.3
+Unknown 1 UK 30.5

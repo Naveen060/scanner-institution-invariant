@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+best.pt
+data/covid_cxr/images_128.npz
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.blg
+paper/*.bbl
+.DS_Store

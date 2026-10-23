@@ -1,0 +1,48 @@
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "Actualmed", "method": "erm", "seed": 0, "auroc": 0.7540048873201195, "acc": 0.4972972972972973, "sec": 33.5}
+{"holdout": "Actualmed", "method": "harmonize", "seed": 0, "auroc": 0.8349171870757535, "acc": 0.6216216216216216, "sec": 43.8}
+{"holdout": "Actualmed", "method": "dann", "seed": 0, "auroc": 0.7383926147162639, "acc": 0.5297297297297298, "sec": 61.7}
+{"holdout": "Actualmed", "method": "groupdro", "seed": 0, "auroc": 0.7503393972305186, "acc": 0.6918918918918919, "sec": 38.6}
+{"holdout": "Actualmed", "method": "sidl", "seed": 0, "auroc": 0.8064078197121911, "acc": 0.31351351351351353, "sec": 62.9}
+{"holdout": "Actualmed", "method": "sidl_phys", "seed": 0, "auroc": 0.7483030138474069, "acc": 0.31351351351351353, "sec": 61.1}
+{"holdout": "Actualmed", "method": "sidl_cc", "seed": 0, "auroc": 0.8335595981536791, "acc": 0.31351351351351353, "sec": 58.4}
+{"holdout": "Actualmed", "method": "sidl_full", "seed": 0, "auroc": 0.7838718436057561, "acc": 0.31351351351351353, "sec": 58.4}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "Actualmed", "method": "erm", "seed": 1, "auroc": 0.7349986424110779, "acc": 0.5081081081081081, "sec": 26.4}
+{"holdout": "Actualmed", "method": "harmonize", "seed": 1, "auroc": 0.445017648655987, "acc": 0.31351351351351353, "sec": 29.4}
+{"holdout": "Actualmed", "method": "dann", "seed": 1, "auroc": 0.79799076839533, "acc": 0.5351351351351351, "sec": 26.7}
+{"holdout": "Actualmed", "method": "groupdro", "seed": 1, "auroc": 0.8051859896823242, "acc": 0.6810810810810811, "sec": 27.2}
+{"holdout": "Actualmed", "method": "sidl", "seed": 1, "auroc": 0.7575346185175129, "acc": 0.31351351351351353, "sec": 58.7}
+{"holdout": "Actualmed", "method": "sidl_phys", "seed": 1, "auroc": 0.6804235677436873, "acc": 0.31351351351351353, "sec": 58.9}
+{"holdout": "Actualmed", "method": "sidl_cc", "seed": 1, "auroc": 0.6377952755905512, "acc": 0.31351351351351353, "sec": 57.3}
+{"holdout": "Actualmed", "method": "sidl_full", "seed": 1, "auroc": 0.7506109150149335, "acc": 0.31351351351351353, "sec": 59.0}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "Italy", "method": "erm", "seed": 0, "auroc": 0.7535000000000001, "acc": 0.725, "sec": 29.3}
+{"holdout": "Italy", "method": "harmonize", "seed": 0, "auroc": 0.7274999999999999, "acc": 0.8083333333333333, "sec": 30.4}
+{"holdout": "Italy", "method": "dann", "seed": 0, "auroc": 0.8130000000000001, "acc": 0.7, "sec": 30.1}
+{"holdout": "Italy", "method": "groupdro", "seed": 0, "auroc": 0.737, "acc": 0.39166666666666666, "sec": 29.0}
+{"holdout": "Italy", "method": "sidl", "seed": 0, "auroc": 0.7135, "acc": 0.8583333333333333, "sec": 62.6}
+{"holdout": "Italy", "method": "sidl_phys", "seed": 0, "auroc": 0.7770000000000001, "acc": 0.8416666666666667, "sec": 64.1}
+{"holdout": "Italy", "method": "sidl_cc", "seed": 0, "auroc": 0.6855000000000001, "acc": 0.8583333333333333, "sec": 62.3}
+{"holdout": "Italy", "method": "sidl_full", "seed": 0, "auroc": 0.8119999999999999, "acc": 0.8333333333333334, "sec": 65.5}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "Italy", "method": "erm", "seed": 1, "auroc": 0.7675000000000001, "acc": 0.7833333333333333, "sec": 29.9}
+{"holdout": "Italy", "method": "harmonize", "seed": 1, "auroc": 0.6844999999999999, "acc": 0.8083333333333333, "sec": 31.8}
+{"holdout": "Italy", "method": "dann", "seed": 1, "auroc": 0.6645, "acc": 0.8583333333333333, "sec": 30.2}
+{"holdout": "Italy", "method": "groupdro", "seed": 1, "auroc": 0.7394999999999999, "acc": 0.7666666666666667, "sec": 30.3}
+{"holdout": "Italy", "method": "sidl", "seed": 1, "auroc": 0.7279999999999999, "acc": 0.8416666666666667, "sec": 66.2}
+{"holdout": "Italy", "method": "sidl_phys", "seed": 1, "auroc": 0.7145, "acc": 0.8333333333333334, "sec": 65.1}
+{"holdout": "Italy", "method": "sidl_cc", "seed": 1, "auroc": 0.7955, "acc": 0.8333333333333334, "sec": 69.2}
+{"holdout": "Italy", "method": "sidl_full", "seed": 1, "auroc": 0.722, "acc": 0.85, "sec": 68.0}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "UK", "method": "erm", "seed": 0, "auroc": 0.8907563025210085, "acc": 0.7727272727272727, "sec": 33.5}
+{"holdout": "UK", "method": "harmonize", "seed": 0, "auroc": 0.8499399759903962, "acc": 0.8181818181818182, "sec": 35.9}
+{"holdout": "UK", "method": "dann", "seed": 0, "auroc": 0.7551020408163265, "acc": 0.7727272727272727, "sec": 32.9}
+{"holdout": "UK", "method": "groupdro", "seed": 0, "auroc": 0.8547418967587035, "acc": 0.7878787878787878, "sec": 34.0}
+{"holdout": "UK", "method": "sidl", "seed": 0, "auroc": 0.6746698679471789, "acc": 0.7272727272727273, "sec": 69.2}
+{"holdout": "UK", "method": "sidl_phys", "seed": 0, "auroc": 0.8283313325330132, "acc": 0.696969696969697, "sec": 74.5}

@@ -1,0 +1,12 @@
+modality: fundus
+backbone: efficientnet_b3
+pretrained: true
+num_classes: 5
+in_chans: 3
+image_size: 300
+epochs: 20
+batch_size: 32
+lr: 1.0e-4
+adv_weight: 0.5
+coral_weight: 0.1
+cons_weight: 0.5

@@ -1,0 +1,12 @@
+{"holdout": "Actualmed", "method": "sidl_full", "seed": 0, "auroc": 0.7872658159109422, "acc": 0.4972972972972973, "sec": 61.5}
+{"holdout": "Actualmed", "method": "sidl_phys", "seed": 0, "auroc": 0.715856638609829, "acc": 0.5405405405405406, "sec": 59.1}
+{"holdout": "Actualmed", "method": "sidl_cc", "seed": 0, "auroc": 0.7806136301927776, "acc": 0.5945945945945946, "sec": 57.9}
+{"holdout": "Italy", "method": "sidl_full", "seed": 0, "auroc": 0.801, "acc": 0.725, "sec": 67.2}
+{"holdout": "Italy", "method": "sidl_phys", "seed": 0, "auroc": 0.7955, "acc": 0.24166666666666667, "sec": 66.1}
+{"holdout": "Italy", "method": "sidl_cc", "seed": 0, "auroc": 0.837, "acc": 0.7583333333333333, "sec": 65.5}
+{"holdout": "China", "method": "sidl_full", "seed": 0, "auroc": 0.7019607843137254, "acc": 0.75, "sec": 73.7}
+{"holdout": "China", "method": "sidl_phys", "seed": 0, "auroc": 0.7921568627450981, "acc": 0.7857142857142857, "sec": 72.9}
+{"holdout": "China", "method": "sidl_cc", "seed": 0, "auroc": 0.7960784313725491, "acc": 0.7857142857142857, "sec": 70.9}
+{"holdout": "Spain", "method": "sidl_full", "seed": 0, "auroc": 0.7178362573099415, "acc": 0.7321428571428571, "sec": 74.3}
+{"holdout": "Spain", "method": "sidl_phys", "seed": 0, "auroc": 0.7266081871345029, "acc": 0.75, "sec": 74.5}
+{"holdout": "Spain", "method": "sidl_cc", "seed": 0, "auroc": 0.7309941520467836, "acc": 0.7321428571428571, "sec": 71.5}

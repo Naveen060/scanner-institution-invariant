@@ -1,0 +1,42 @@
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "China", "method": "erm", "seed": 0, "auroc": 0.7803921568627452, "acc": 0.75, "sec": 45.7}
+{"holdout": "China", "method": "harmonize", "seed": 0, "auroc": 0.615686274509804, "acc": 0.7678571428571429, "sec": 59.5}
+{"holdout": "China", "method": "dann", "seed": 0, "auroc": 0.796078431372549, "acc": 0.7678571428571429, "sec": 64.8}
+{"holdout": "China", "method": "groupdro", "seed": 0, "auroc": 0.780392156862745, "acc": 0.75, "sec": 41.1}
+{"holdout": "China", "method": "sidl", "seed": 0, "auroc": 0.5450980392156862, "acc": 0.7857142857142857, "sec": 75.3}
+{"holdout": "China", "method": "sidl_phys", "seed": 0, "auroc": 0.6901960784313725, "acc": 0.8392857142857143, "sec": 75.9}
+{"holdout": "China", "method": "sidl_cc", "seed": 0, "auroc": 0.6509803921568627, "acc": 0.39285714285714285, "sec": 73.1}
+{"holdout": "China", "method": "sidl_full", "seed": 0, "auroc": 0.5411764705882354, "acc": 0.875, "sec": 76.4}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "China", "method": "erm", "seed": 1, "auroc": 0.8352941176470587, "acc": 0.8035714285714286, "sec": 36.5}
+{"holdout": "China", "method": "harmonize", "seed": 1, "auroc": 0.5568627450980392, "acc": 0.7857142857142857, "sec": 39.6}
+{"holdout": "China", "method": "dann", "seed": 1, "auroc": 0.8470588235294118, "acc": 0.8214285714285714, "sec": 37.0}
+{"holdout": "China", "method": "groupdro", "seed": 1, "auroc": 0.8549019607843137, "acc": 0.75, "sec": 36.5}
+{"holdout": "China", "method": "sidl", "seed": 1, "auroc": 0.6431372549019607, "acc": 0.8214285714285714, "sec": 73.3}
+{"holdout": "China", "method": "sidl_phys", "seed": 1, "auroc": 0.5882352941176471, "acc": 0.8214285714285714, "sec": 75.2}
+{"holdout": "China", "method": "sidl_cc", "seed": 1, "auroc": 0.5215686274509804, "acc": 0.8214285714285714, "sec": 73.6}
+{"holdout": "China", "method": "sidl_full", "seed": 1, "auroc": 0.615686274509804, "acc": 0.8571428571428571, "sec": 75.5}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "Spain", "method": "erm", "seed": 0, "auroc": 0.7675438596491229, "acc": 0.7857142857142857, "sec": 32.0}
+{"holdout": "Spain", "method": "harmonize", "seed": 0, "auroc": 0.7923976608187134, "acc": 0.6428571428571429, "sec": 33.9}
+{"holdout": "Spain", "method": "dann", "seed": 0, "auroc": 0.7046783625730995, "acc": 0.7142857142857143, "sec": 32.3}
+{"holdout": "Spain", "method": "groupdro", "seed": 0, "auroc": 0.7733918128654971, "acc": 0.75, "sec": 32.8}
+{"holdout": "Spain", "method": "sidl", "seed": 0, "auroc": 0.7353801169590642, "acc": 0.6785714285714286, "sec": 71.6}
+{"holdout": "Spain", "method": "sidl_phys", "seed": 0, "auroc": 0.7178362573099415, "acc": 0.6785714285714286, "sec": 74.3}
+{"holdout": "Spain", "method": "sidl_cc", "seed": 0, "auroc": 0.7222222222222222, "acc": 0.6964285714285714, "sec": 76.3}
+{"holdout": "Spain", "method": "sidl_full", "seed": 0, "auroc": 0.7002923976608187, "acc": 0.6785714285714286, "sec": 75.5}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)
+{"holdout": "Spain", "method": "erm", "seed": 1, "auroc": 0.672514619883041, "acc": 0.7321428571428571, "sec": 34.5}
+{"holdout": "Spain", "method": "harmonize", "seed": 1, "auroc": 0.7456140350877193, "acc": 0.7321428571428571, "sec": 40.3}
+{"holdout": "Spain", "method": "dann", "seed": 1, "auroc": 0.652046783625731, "acc": 0.6785714285714286, "sec": 35.9}
+{"holdout": "Spain", "method": "groupdro", "seed": 1, "auroc": 0.6491228070175439, "acc": 0.6964285714285714, "sec": 34.4}
+{"holdout": "Spain", "method": "sidl", "seed": 1, "auroc": 0.6900584795321637, "acc": 0.6785714285714286, "sec": 74.2}
+{"holdout": "Spain", "method": "sidl_phys", "seed": 1, "auroc": 0.7456140350877193, "acc": 0.7142857142857143, "sec": 76.9}
+{"holdout": "Spain", "method": "sidl_cc", "seed": 1, "auroc": 0.6739766081871346, "acc": 0.6785714285714286, "sec": 74.2}
+{"holdout": "Spain", "method": "sidl_full", "seed": 1, "auroc": 0.6505847953216374, "acc": 0.6607142857142857, "sec": 78.6}
+/home/claude/sidl/scripts/../sidl/data.py:32: UserWarning: you are shuffling a 'StringArray' object which is not a subclass of 'Sequence'; `shuffle` is not guaranteed to behave correctly. E.g., non-numpy array/tensor objects with view semantics may contain duplicates after shuffling.
+  rng.shuffle(uniq)

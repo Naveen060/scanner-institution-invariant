@@ -1,0 +1,74 @@
+{"holdout": "UK", "method": "erm", "seed": 0, "auroc": 0.8907563025210085, "acc": 0.7727272727272727, "sec": 36.6}
+{"holdout": "UK", "method": "erm", "seed": 1, "auroc": 0.8271308523409363, "acc": 0.7878787878787878, "sec": 39.6}
+{"holdout": "Australia", "method": "erm", "seed": 0, "auroc": 0.6574074074074074, "acc": 0.5833333333333334, "sec": 36.1}
+{"holdout": "Australia", "method": "erm", "seed": 1, "auroc": 0.4722222222222222, "acc": 0.5, "sec": 36.4}
+{"holdout": "Other", "method": "erm", "seed": 0, "auroc": 0.6276759884281582, "acc": 0.5942028985507246, "sec": 33.4}
+{"holdout": "Other", "method": "erm", "seed": 1, "auroc": 0.6300867888138861, "acc": 0.6231884057971014, "sec": 32.3}
+{"holdout": "Unknown", "method": "erm", "seed": 0, "auroc": 0.7655502392344498, "acc": 0.5961538461538461, "sec": 37.4}
+{"holdout": "Unknown", "method": "erm", "seed": 1, "auroc": 0.784688995215311, "acc": 0.7884615384615384, "sec": 38.3}
+{"holdout": "UK", "method": "groupdro", "seed": 0, "auroc": 0.8547418967587035, "acc": 0.7878787878787878, "sec": 38.8}
+{"holdout": "UK", "method": "groupdro", "seed": 1, "auroc": 0.8187274909963985, "acc": 0.7727272727272727, "sec": 36.4}
+{"holdout": "Australia", "method": "groupdro", "seed": 0, "auroc": 0.6975308641975309, "acc": 0.55, "sec": 38.6}
+{"holdout": "Australia", "method": "groupdro", "seed": 1, "auroc": 0.6604938271604939, "acc": 0.7333333333333333, "sec": 35.5}
+{"holdout": "Other", "method": "groupdro", "seed": 0, "auroc": 0.6508196721311474, "acc": 0.5990338164251208, "sec": 29.1}
+{"holdout": "Other", "method": "groupdro", "seed": 1, "auroc": 0.6639344262295083, "acc": 0.6231884057971014, "sec": 29.0}
+{"holdout": "Unknown", "method": "groupdro", "seed": 0, "auroc": 0.7814992025518341, "acc": 0.6730769230769231, "sec": 38.8}
+{"holdout": "Unknown", "method": "groupdro", "seed": 1, "auroc": 0.7511961722488039, "acc": 0.7692307692307693, "sec": 36.8}
+{"holdout": "UK", "method": "dann", "seed": 0, "auroc": 0.7551020408163265, "acc": 0.7727272727272727, "sec": 37.2}
+{"holdout": "UK", "method": "dann", "seed": 1, "auroc": 0.737094837935174, "acc": 0.7272727272727273, "sec": 35.1}
+{"holdout": "Australia", "method": "dann", "seed": 0, "auroc": 0.6450617283950617, "acc": 0.5, "sec": 35.0}
+{"holdout": "Australia", "method": "dann", "seed": 1, "auroc": 0.6574074074074074, "acc": 0.45, "sec": 34.6}
+{"holdout": "Other", "method": "dann", "seed": 0, "auroc": 0.6627772420443588, "acc": 0.5990338164251208, "sec": 28.8}
+{"holdout": "Other", "method": "dann", "seed": 1, "auroc": 0.6276759884281582, "acc": 0.5893719806763285, "sec": 30.6}
+{"holdout": "Unknown", "method": "dann", "seed": 0, "auroc": 0.7799043062200958, "acc": 0.7692307692307693, "sec": 36.9}
+{"holdout": "Unknown", "method": "dann", "seed": 1, "auroc": 0.748006379585327, "acc": 0.7115384615384616, "sec": 38.0}
+{"holdout": "UK", "method": "harmonize", "seed": 0, "auroc": 0.8607442977190876, "acc": 0.8333333333333334, "sec": 39.2}
+{"holdout": "UK", "method": "harmonize", "seed": 1, "auroc": 0.794717887154862, "acc": 0.7272727272727273, "sec": 37.9}
+{"holdout": "Australia", "method": "harmonize", "seed": 0, "auroc": 0.7037037037037037, "acc": 0.5166666666666667, "sec": 37.8}
+{"holdout": "Australia", "method": "harmonize", "seed": 1, "auroc": 0.5462962962962963, "acc": 0.6333333333333333, "sec": 37.5}
+{"holdout": "Other", "method": "harmonize", "seed": 0, "auroc": 0.6388621022179364, "acc": 0.5893719806763285, "sec": 30.7}
+{"holdout": "Other", "method": "harmonize", "seed": 1, "auroc": 0.5983606557377049, "acc": 0.5893719806763285, "sec": 30.5}
+{"holdout": "Unknown", "method": "harmonize", "seed": 0, "auroc": 0.7910685805422648, "acc": 0.7307692307692307, "sec": 39.2}
+{"holdout": "Unknown", "method": "harmonize", "seed": 1, "auroc": 0.7926634768740032, "acc": 0.7692307692307693, "sec": 37.8}
+{"holdout": "UK", "method": "phys_aug", "seed": 0, "auroc": 0.8631452581032413, "acc": 0.7878787878787878, "sec": 41.8}
+{"holdout": "UK", "method": "phys_aug", "seed": 1, "auroc": 0.5426170468187276, "acc": 0.7424242424242424, "sec": 40.4}
+{"holdout": "Australia", "method": "phys_aug", "seed": 0, "auroc": 0.7191358024691358, "acc": 0.15, "sec": 42.5}
+{"holdout": "Australia", "method": "phys_aug", "seed": 1, "auroc": 0.5648148148148149, "acc": 0.6833333333333333, "sec": 39.8}
+{"holdout": "Other", "method": "phys_aug", "seed": 0, "auroc": 0.6437801350048218, "acc": 0.6183574879227053, "sec": 33.1}
+{"holdout": "Other", "method": "phys_aug", "seed": 1, "auroc": 0.6372227579556413, "acc": 0.5797101449275363, "sec": 32.6}
+{"holdout": "Unknown", "method": "phys_aug", "seed": 0, "auroc": 0.7735247208931421, "acc": 0.75, "sec": 40.6}
+{"holdout": "Unknown", "method": "phys_aug", "seed": 1, "auroc": 0.8086124401913876, "acc": 0.7307692307692307, "sec": 40.3}
+{"holdout": "UK", "method": "pai", "seed": 0, "auroc": 0.8187274909963985, "acc": 0.7121212121212122, "sec": 40.1}
+{"holdout": "UK", "method": "pai", "seed": 1, "auroc": 0.8871548619447779, "acc": 0.7272727272727273, "sec": 38.7}
+{"holdout": "Australia", "method": "pai", "seed": 0, "auroc": 0.6018518518518519, "acc": 0.7, "sec": 39.5}
+{"holdout": "Australia", "method": "pai", "seed": 1, "auroc": 0.5, "acc": 0.7666666666666667, "sec": 38.4}
+{"holdout": "Other", "method": "pai", "seed": 0, "auroc": 0.6433944069431051, "acc": 0.6135265700483091, "sec": 31.9}
+{"holdout": "Other", "method": "pai", "seed": 1, "auroc": 0.6270973963355835, "acc": 0.5990338164251208, "sec": 32.0}
+{"holdout": "Unknown", "method": "pai", "seed": 0, "auroc": 0.7496012759170654, "acc": 0.7115384615384616, "sec": 38.3}
+{"holdout": "Unknown", "method": "pai", "seed": 1, "auroc": 0.835725677830941, "acc": 0.7115384615384616, "sec": 38.7}
+{"holdout": "UK", "method": "sidl_cc", "seed": 0, "auroc": 0.6830732292917167, "acc": 0.7727272727272727, "sec": 71.9}
+{"holdout": "UK", "method": "sidl_cc", "seed": 1, "auroc": 0.8115246098439376, "acc": 0.7575757575757576, "sec": 69.8}
+{"holdout": "Australia", "method": "sidl_cc", "seed": 0, "auroc": 0.7561728395061729, "acc": 0.15, "sec": 69.6}
+{"holdout": "Australia", "method": "sidl_cc", "seed": 1, "auroc": 0.5555555555555556, "acc": 0.45, "sec": 71.0}
+{"holdout": "Other", "method": "sidl_cc", "seed": 0, "auroc": 0.659112825458052, "acc": 0.6473429951690821, "sec": 56.6}
+{"holdout": "Other", "method": "sidl_cc", "seed": 1, "auroc": 0.6105110896817744, "acc": 0.6231884057971014, "sec": 57.8}
+{"holdout": "Unknown", "method": "sidl_cc", "seed": 0, "auroc": 0.7543859649122807, "acc": 0.7115384615384616, "sec": 72.3}
+{"holdout": "Unknown", "method": "sidl_cc", "seed": 1, "auroc": 0.7655502392344498, "acc": 0.75, "sec": 71.5}
+UK 0 Actualmed 29.3
+UK 0 Australia 31.3
+UK 0 China 31.9
+UK 0 Figure1 31.5
+UK 0 Hannover-DE 31.6
+UK 0 Italy 28.2
+UK 0 Other 25.6
+UK 0 Spain 32.7
+UK 0 Unknown 31.5
+UK 1 Actualmed 26.3
+UK 1 Australia 31.8
+UK 1 China 31.2
+UK 1 Figure1 31.8
+UK 1 Hannover-DE 31.5
+UK 1 Italy 28.8
+UK 1 Other 26.0
+UK 1 Spain 32.2
+UK 1 Unknown 31.9
