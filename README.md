@@ -1,6 +1,6 @@
 # Scanner- and institution-invariant diagnosis: a leave-site-out study
 
-Code, frozen experiment logs and manuscripts. Two manuscripts are kept: the 8-page single-column version *Scanner-Invariant and Institution-Invariant Deep Learning for Reliable Medical Image Diagnosis Across Heterogeneous Clinical Environments* (`paper/main.pdf`, CNN results only) and the IEEE two-column version *Does Site Invariance Help at Unseen Hospitals? A Frozen Leave-Site-Out and Conformal Evaluation on Chest Radiographs* (`paper/ieee/main.pdf`), which adds a second, pretrained-encoder family (iterations 11-17) and the robustness checks of iterations 19-20.
+Code, frozen experiment logs and manuscripts. Two manuscripts are kept: the 8-page single-column version *Scanner-Invariant and Institution-Invariant Deep Learning for Reliable Medical Image Diagnosis Across Heterogeneous Clinical Environments* (`paper/main.pdf`, CNN results only) and the IEEE two-column version (`paper/ieee/main.pdf`, same title, without the subtitle), which adds a second, pretrained-encoder family (iterations 11-17) and the robustness checks of iterations 19-20.
 
 ## What this project found (all numbers are produced by `scripts/final_report.py` from `runs/`)
 
@@ -11,7 +11,7 @@ Setting: open multi-source chest-radiograph benchmark (924 images, 10 sources, C
 3. **Conformal prediction for unseen sites.** Seen-site validation overstates held-out AUROC by 0.118; pooled split-conformal sets cover 0.836 on average at a 0.90 target (4 of 8 sites more than 5 points short). A leave-site-out CV+ rule (sites as folds) leaves no site more than 5 points short at ~26% larger sets; all calibrations lie on one coverage-size curve.
 4. **Simulation realism.** Controlled simulated acquisition shift does not reproduce the real under-coverage.
 
-The first manuscript's title promises more than the evidence supports (one modality, one task, no benefit from the invariance recipe); the IEEE version's title states the question instead.
+Both manuscripts use the original title. It promises more than the evidence supports (one modality, one task, no benefit from the invariance recipe), so the abstract states the negative result up front; an earlier draft of the IEEE version used a question-style title (*Does Site Invariance Help at Unseen Hospitals? ...*) and was reverted at the author's request.
 
 ### Round 2: a second encoder family (iterations 11-17, `experiments/ITERATIONS.md`)
 

@@ -29,6 +29,12 @@ Status: the manuscript is formatted and complete as a **draft**. It cannot be su
 8. **Cover letter.** State the main finding honestly (a frozen negative result plus conformal-calibration findings, not a new method that wins) and that the work was prepared with an AI system as disclosed.
 9. **Copyright and forms.** IEEE collects the electronic copyright form after acceptance; have author details ready.
 
+## Title
+The manuscript uses the original title ("Scanner-Invariant and Institution-Invariant Deep Learning for Reliable Medical Image Diagnosis Across Heterogeneous Clinical Environments"), without the subtitle of the 8-page version, because IEEE titles are a single line. The title says "Reliable", while the results are mostly negative (no method beats ERM). Reviewers may read that as a promise the paper does not keep, so consider a title that names the evaluation (for example a subtitle about leave-site-out and conformal evaluation); the earlier question-style wording is kept in the git history.
+
+## Word version
+`sidl_ieee_paper.docx` follows the IEEE two-column layout (Letter, Times New Roman 10 pt, roman-numbered small-caps section headings, TABLE/Fig. captions, bracketed references, wide figures and tables across both columns). It was generated from the LaTeX source and checked by converting it to PDF, but it is not the official IEEE Word template. For submission, use the LaTeX source/PDF or move the text into the journal's own template.
+
 ## Honest fit assessment
 - The paper's contribution is an evaluation and a set of negative results on 924 images from one modality. That fits venues that publish careful empirical and reproducibility work better than venues that expect a new method with a clear accuracy gain. The strongest claims (conformal under-coverage, optimism of seen-site validation, replicated on two encoder families) are well supported; the accuracy-improvement direction (ensemble, GroupDRO) is **not significant**, depends heavily on the two smallest test sets, and the text says so.
 - Likely reviewer objections: one dataset and modality; eight small sites; COVID-19 as a shortcut-prone benchmark; frozen (not fine-tuned) pretrained encoder; tiny test sets at two sites (now analysed in the robustness subsection); the interval tables are not multiplicity-corrected (Holm-adjusted p-values are reported); possible overlap between the benchmark and the encoder's pretraining data (not checked). These are listed in the threats-to-validity subsection.
