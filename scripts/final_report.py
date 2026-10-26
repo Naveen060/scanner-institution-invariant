@@ -12,15 +12,13 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-plt.rcParams["pdf.fonttype"] = 42  # embed TrueType fonts (IEEE PDF eXpress rejects Type 3)
-plt.rcParams["ps.fonttype"] = 42
-plt.rcParams["font.family"] = "DejaVu Sans"
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
 from sidl.metrics import auroc  # noqa: E402
+from figstyle import FS, finish, size, title  # noqa: E402  (FIG_PROFILE=ieee switches to the IEEE figure style)
 
 DEV = ["Actualmed", "Italy", "China", "Spain"]
 CONF = ["UK", "Australia", "Other", "Unknown"]
@@ -142,16 +140,19 @@ def main_table(fold):
 
 def fig_methods(piv):
     labels = list(piv.index)
-    fig, ax = plt.subplots(figsize=(7.2, 3.6))
+    fig, ax = plt.subplots(figsize=size((7.2, 3.6), (7.16, 2.35)))
     for i, l in enumerate(labels):
         v = piv.loc[l].dropna()
-        ax.scatter(np.full(len(v), i) + np.random.RandomState(i).uniform(-.12, .12, len(v)), v, s=18, alpha=.7, c=["#4477aa" if h in DEV else "#cc6677" for h in v.index])
+        jit = np.random.RandomState(i).uniform(-.12, .12, len(v))
+        for is_dev, col, mk in ((True, "#4477aa", "o"), (False, "#cc6677", "^")):
+            sel = np.array([(h in DEV) == is_dev for h in v.index])
+            ax.scatter((np.full(len(v), i) + jit)[sel], v.values[sel], s=18, alpha=.8, c=col, marker=mk)
         lo, hi = boot(v.values); ax.plot([i - .25, i + .25], [v.mean()] * 2, c="k", lw=2); ax.plot([i, i], [lo, hi], c="k", lw=1)
-    ax.set_xticks(range(len(labels))); ax.set_xticklabels(labels, rotation=35, ha="right", fontsize=8)
+    ax.set_xticks(range(len(labels))); ax.set_xticklabels(labels, rotation=35, ha="right", fontsize=FS(8))
     ax.set_ylabel("Held-out-site AUROC"); ax.axhline(piv.loc["ERM"].mean(), ls=":", c="gray", lw=1)
-    ax.scatter([], [], c="#4477aa", s=18, label="development folds"); ax.scatter([], [], c="#cc6677", s=18, label="confirmation folds"); ax.legend(fontsize=7, loc="lower left")
-    ax.set_title("Leave-one-site-out AUROC (each dot = one held-out site, mean of 2 seeds)", fontsize=9)
-    fig.tight_layout(); fig.savefig("paper/figures/fig_methods.png", dpi=200); fig.savefig("paper/figures/fig_methods.pdf"); plt.close(fig)
+    ax.scatter([], [], c="#4477aa", s=18, marker="o", label="development sites"); ax.scatter([], [], c="#cc6677", s=18, marker="^", label="confirmation sites"); ax.legend(**size(dict(fontsize=7, loc="lower left"), dict(fontsize=8, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, frameon=False)))
+    title(ax, "Leave-one-site-out AUROC (each dot = one held-out site, mean of 2 seeds)", fontsize=FS(9))
+    finish(fig, "fig_methods")
 
 
 def conformal_summary():
@@ -186,18 +187,22 @@ def conformal_summary():
     open("paper/tables/conformal.tex", "w").write(tex)
     SUM["conformal_alpha0.1"] = {m: {k: (float(v) if not isinstance(v, (int, np.integer)) else int(v)) for k, v in S.loc[m].items()} for m in S.index}
     # figure: per-fold coverage by mode
-    fig, axs = plt.subplots(1, 2, figsize=(9, 3.4))
+    fig, axs = plt.subplots(1, 2, figsize=size((9, 3.4), (7.16, 2.65)), gridspec_kw={"width_ratios": [1.15, 1]} if size(0, 1) else None)
     P = fold.pivot(index="mode", columns="holdout", values="coverage")
     cols = [h for h in ALL if h in P.columns]
     for i, m in enumerate([m for m in order if m in P.index]):
-        axs[0].scatter(P.loc[m, cols].values, np.full(len(cols), i) + np.random.RandomState(i).uniform(-.15, .15, len(cols)), s=22, c=["#4477aa" if h in DEV else "#cc6677" for h in cols], alpha=.8)
+        jit = np.random.RandomState(i).uniform(-.15, .15, len(cols))
+        for is_dev, col, mk in ((True, "#4477aa", "o"), (False, "#cc6677", "^")):
+            sel = np.array([(h in DEV) == is_dev for h in cols])
+            axs[0].scatter(P.loc[m, cols].values[sel], (np.full(len(cols), i) + jit)[sel], s=22, c=col, marker=mk, alpha=.8)
         axs[0].plot([P.loc[m, cols].mean()] * 2, [i - .3, i + .3], c="k")
-    axs[0].axvline(0.9, c="gray", ls=":"); axs[0].set_yticks(range(len([m for m in order if m in P.index]))); axs[0].set_yticklabels([names[m] for m in order if m in P.index], fontsize=7)
-    axs[0].scatter([], [], c="#4477aa", s=22, label="development folds"); axs[0].scatter([], [], c="#cc6677", s=22, label="confirmation folds"); axs[0].legend(fontsize=6, loc="lower left"); axs[0].set_xlabel("Coverage on held-out site (target 0.90)"); axs[0].set_title("Per-site coverage, alpha=0.1", fontsize=9)
-    for m in [m for m in order if m in C["mode"].unique()]:
-        g = C[C["mode"] == m].sort_values("coverage"); axs[1].plot(g["size"], g.coverage, marker="o", ms=3, label=names[m], lw=1)
-    axs[1].set_xlabel("Mean set size"); axs[1].set_ylabel("Coverage"); axs[1].legend(fontsize=6); axs[1].set_title("Coverage vs. size across alpha", fontsize=9)
-    fig.tight_layout(); fig.savefig("paper/figures/fig_conformal.png", dpi=200); fig.savefig("paper/figures/fig_conformal.pdf"); plt.close(fig)
+    axs[0].axvline(0.9, c="gray", ls=":"); axs[0].set_yticks(range(len([m for m in order if m in P.index]))); axs[0].set_yticklabels([names[m] for m in order if m in P.index], fontsize=FS(7))
+    axs[0].scatter([], [], c="#4477aa", s=22, marker="o", label="development sites"); axs[0].scatter([], [], c="#cc6677", s=22, marker="^", label="confirmation sites"); axs[0].legend(**size(dict(fontsize=6, loc="lower left"), dict(fontsize=8, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, frameon=False))); axs[0].set_xlabel("Coverage on held-out site (target 0.90)"); title(axs[0], "Per-site coverage, alpha=0.1", fontsize=FS(9))
+    SHORT = {"pooled": "Pooled", "site_balanced": "Site-balanced", "worst_site": "Worst-site", "lso_split": "LSO-split", "lso_split_bal": "LSO-split bal.", "lso_worst": "LSO-worst", "lso_cvplus": "LSO-CV+", "lso_cvplus_bal": "LSO-CV+ bal."}
+    for j, m in enumerate([m for m in order if m in C["mode"].unique()]):
+        g = C[C["mode"] == m].sort_values("coverage"); axs[1].plot(g["size"], g.coverage, marker="osv^DPX*"[j % 8], ms=3, label=size(names[m], SHORT[m]), lw=1, ls=["-", "--", "-.", ":"][j % 4])
+    axs[1].set_xlabel("Mean set size"); axs[1].set_ylabel("Coverage"); axs[1].legend(**size(dict(fontsize=6), dict(fontsize=8, loc="upper left", ncol=2, columnspacing=0.8, handlelength=1.6, labelspacing=0.25, borderpad=0.3))); axs[1].set_ylim(*size((None, None), (0.66, 1.08))); axs[1].set_yticks([0.7, 0.8, 0.9, 1.0]) if size(0, 1) else None; title(axs[1], "Coverage vs. size across alpha", fontsize=FS(9))
+    finish(fig, "fig_conformal", axs, ["(a)", "(b)"])
 
 
 def optimism():
@@ -228,11 +233,11 @@ def optimism():
         rho_gap_cov = float(spearmanr(gap[common], pc[common])[0])
     SUM["optimism"] = dict(rho_gap_cov=rho_gap_cov, rho_seen=rho_seen, rho_lso=rho_lso, per_fold=g.round(4).to_dict("index"), mean_signed_seen=float((d.seen_val - d.actual).mean()), mean_signed_lso=float((d.lso_est - d.actual).mean()),
                            mae_seen=float((d.seen_val - d.actual).abs().mean()), mae_lso=float((d.lso_est - d.actual).abs().mean()), n_units=int(len(d)))
-    fig, ax = plt.subplots(figsize=(4.6, 2.9)); x = np.arange(len(g)); w = .27
-    ax.bar(x - w, g.seen_val, w, label="seen-site validation", color="#ddaa33"); ax.bar(x, g.lso_est, w, label="leave-site-out estimate", color="#4477aa"); ax.bar(x + w, g.actual, w, label="actual held-out", color="#228833")
-    ax.set_xticks(x); ax.set_xticklabels(g.index, fontsize=7, rotation=35, ha="right"); ax.set_ylim(0.3, 1.05); ax.set_ylabel("AUROC", fontsize=8); ax.tick_params(axis="y", labelsize=7); ax.legend(fontsize=6.5, ncol=3, loc="upper center", columnspacing=0.8, handlelength=1.2)
-    ax.set_title("Validation optimism (ERM)", fontsize=8)
-    fig.tight_layout(); fig.savefig("paper/figures/fig_optimism.png", dpi=200); fig.savefig("paper/figures/fig_optimism.pdf"); plt.close(fig)
+    fig, ax = plt.subplots(figsize=size((4.6, 2.9), (3.5, 2.7))); x = np.arange(len(g)); w = .27
+    ax.bar(x - w, g.seen_val, w, label="seen-site validation", color="#ddaa33", hatch="///", edgecolor="k", lw=.3); ax.bar(x, g.lso_est, w, label="leave-site-out estimate", color="#4477aa", hatch="...", edgecolor="k", lw=.3); ax.bar(x + w, g.actual, w, label="actual held-out", color="#228833", edgecolor="k", lw=.3)
+    ax.set_xticks(x); ax.set_xticklabels(g.index, fontsize=FS(7), rotation=35, ha="right"); ax.set_ylim(0.3, size(1.05, 1.28)); ax.set_ylabel("AUROC", fontsize=FS(8)); ax.tick_params(axis="y", labelsize=FS(7)); ax.set_yticks([0.4, 0.6, 0.8, 1.0]) if size(0, 1) else None; ax.legend(fontsize=FS(6.5), ncol=size(3, 1), loc="upper center", columnspacing=0.8, handlelength=1.2)
+    title(ax, "Validation optimism (ERM)", fontsize=FS(8))
+    finish(fig, "fig_optimism")
 
 
 def synth():
@@ -244,10 +249,10 @@ def synth():
     sd = d.groupby(["spread", "method"]).auroc.std().unstack("method")
     SUM["synth_label_shift_lam0.5"] = t.round(4).to_dict("index")
     names = {"erm": "ERM", "erm_p": "ERM + prior reweight", "dann": "DANN", "cdann": "cDANN", "cdann_p": "cDANN + prior reweight"}
-    fig, axs = plt.subplots(1, 2, figsize=(9, 3.2))
+    fig, axs = plt.subplots(1, 2, figsize=size((9, 3.2), (7.16, 2.2)))
     for m in ["erm", "erm_p", "dann", "cdann", "cdann_p"]:
         axs[0].errorbar(t.index, t[m], yerr=sd[m] / np.sqrt(6), marker="o", ms=4, capsize=2, label=names[m], lw=1)
-    axs[0].set_xlabel("Prior spread across virtual sites"); axs[0].set_ylabel("Held-out AUROC"); axs[0].legend(fontsize=6); axs[0].set_title("Label-shift sweep (adv. weight 0.5)", fontsize=9)
+    axs[0].set_xlabel("Prior spread across virtual sites"); axs[0].set_ylabel("Held-out AUROC"); axs[0].legend(fontsize=FS(6)); title(axs[0], "Label-shift sweep (adv. weight 0.5)", fontsize=FS(9))
     rows = []
     for tag, lam in [("runs/it3", 0.5), ("runs/it4_l01", 0.1), ("runs/it4_l002", 0.02)]:
         f = f"{tag}/results.jsonl"
@@ -257,8 +262,8 @@ def synth():
     for m in ["dann", "cdann_p"]:
         g = R[R.method == m].groupby("lam").auroc.mean(); axs[1].plot(g.index, g.values, marker="o", label=names[m])
     axs[1].axhline(d[(d.method == "erm") & (d.spread == .4)].auroc.mean(), c="k", ls=":", label="ERM"); axs[1].set_xscale("log"); axs[1].set_xticks([0.02, 0.1, 0.5]); axs[1].set_xticklabels(["0.02", "0.1", "0.5"]); axs[1].minorticks_off()
-    axs[1].set_xlabel("Adversary weight"); axs[1].set_ylabel("Held-out AUROC (spread 0.4)"); axs[1].legend(fontsize=7, loc="lower left"); axs[1].set_title("Adversary strength sweep (spread 0.4)", fontsize=9)
-    fig.tight_layout(); fig.savefig("paper/figures/fig_synth.png", dpi=200); fig.savefig("paper/figures/fig_synth.pdf"); plt.close(fig)
+    axs[1].set_xlabel("Adversary weight"); axs[1].set_ylabel("Held-out AUROC (spread 0.4)"); axs[1].legend(fontsize=FS(7), loc="lower left"); title(axs[1], "Adversary strength sweep (spread 0.4)", fontsize=FS(9))
+    finish(fig, "fig_synth", axs, ["(a)", "(b)"])
 
 
 def synth_tables():
@@ -376,14 +381,14 @@ def diagnostics():
     if not os.path.exists(f):
         return
     d = json.load(open(f)); SUM["diagnostics"] = {k: d[k] for k in d if k != "param_names"}
-    fig, axs = plt.subplots(1, 2, figsize=(9, 3.2))
+    fig, axs = plt.subplots(1, 2, figsize=size((9, 3.2), (7.16, 2.2)))
     pv = d["prevalence"]; names = sorted(pv, key=lambda s: -pv[s]["n"])
-    axs[0].bar(range(len(names)), [pv[s]["prev"] for s in names], color="#4477aa"); axs[0].set_xticks(range(len(names))); axs[0].set_xticklabels(names, rotation=50, ha="right", fontsize=7)
-    axs[0].set_ylabel("COVID-19 prevalence"); axs[0].set_title(f"Label prior per source (SD={d['prior_spread_std']:.2f})", fontsize=9)
+    axs[0].bar(range(len(names)), [pv[s]["prev"] for s in names], color="#4477aa"); axs[0].set_xticks(range(len(names))); axs[0].set_xticklabels(names, rotation=50, ha="right", fontsize=FS(7))
+    axs[0].set_ylabel("COVID-19 prevalence"); title(axs[0], f"Label prior per source (SD={d['prior_spread_std']:.2f})", fontsize=FS(9))
     L = d["profile_only_label_auroc_loso"]["logreg"]; ks = list(L)
-    axs[1].bar(range(len(ks)), [L[k] for k in ks], color="#cc6677"); axs[1].axhline(0.5, c="k", ls=":"); axs[1].set_xticks(range(len(ks))); axs[1].set_xticklabels(ks, rotation=50, ha="right", fontsize=7)
-    axs[1].set_ylabel("AUROC"); axs[1].set_title("Label from 5 acquisition numbers alone (LOSO)", fontsize=9)
-    fig.tight_layout(); fig.savefig("paper/figures/fig_diagnostics.png", dpi=200); fig.savefig("paper/figures/fig_diagnostics.pdf"); plt.close(fig)
+    axs[1].bar(range(len(ks)), [L[k] for k in ks], color="#cc6677"); axs[1].axhline(0.5, c="k", ls=":"); axs[1].set_xticks(range(len(ks))); axs[1].set_xticklabels(ks, rotation=50, ha="right", fontsize=FS(7))
+    axs[1].set_ylabel("AUROC"); title(axs[1], "Label from 5 acquisition numbers alone (LOSO)", fontsize=FS(9))
+    finish(fig, "fig_diagnostics", axs, ["(a)", "(b)"])
 
 
 def _name(*parts):

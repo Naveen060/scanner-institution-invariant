@@ -9,11 +9,9 @@ import os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-plt.rcParams["pdf.fonttype"] = 42  # embed TrueType fonts (IEEE PDF eXpress rejects Type 3)
-plt.rcParams["ps.fonttype"] = 42
-plt.rcParams["font.family"] = "DejaVu Sans"
 import numpy as np
 import pandas as pd
+from figstyle import FS, finish, size, title  # FIG_PROFILE=ieee switches to the IEEE figure style
 
 DEV = ["Actualmed", "Italy", "China", "Spain"]
 CONF = ["UK", "Australia", "Other", "Unknown"]
@@ -51,7 +49,7 @@ open("paper/tables/r2_models.tex", "w").write("\\begin{tabular}{lccccc}\n\\topru
 
 # ---- Table: feature heads
 HL = {"erm": "ERM", "groupdro": "GroupDRO", "erm_p": "Prior reweighting", "dann": "DANN", "cdann": "Class-cond.\\ adversary", "cdann_p": "Class-cond.\\ adv.\\ + prior",
-      "coral": "CORAL", "cc_full": "Class-cond.\\ recipe", "sitecenter": "Site centering (uses target images)"}
+      "coral": "CORAL", "cc_full": "Class-cond.\\ recipe", "sitecenter": "Site centering (target images)"}
 rows = []
 for k in ["erm", "groupdro", "erm_p", "dann", "cdann", "cdann_p", "coral", "cc_full", "sitecenter"]:
     f = R["feat_methods"][k]
@@ -151,7 +149,7 @@ if os.path.exists("runs/reviewer_checks.json"):
     rows = []
     for fam, tag in (("CNN", "Cnn"), ("Pretrained head", "Pre"), ("CNN + pretrained", "Ens")):
         key = {"CNN": "CNN", "Pretrained head": "Pretrained", "CNN + pretrained": "Ensemble"}[fam]
-        for mm, nm in (("pooled", "Pooled (seen-site val.)"), ("lso_cvplus", "LSO-CV+")):
+        for mm, nm in (("pooled", "Pooled"), ("lso_cvplus", "LSO-CV+")):
             c = RV["coverage"][key][mm]
             rows.append(f"{fam if mm == 'pooled' else ''} & {nm} & {c['mean']:.3f} [{c['lo']:.3f}, {c['hi']:.3f}] & {c['cov_other']:.3f} & {c['cov_covid']:.3f} \\\\" + ("\\addlinespace" if mm == "lso_cvplus" else ""))
     open("paper/tables/r2_coverage_ci.tex", "w").write("\\begin{tabular}{llccc}\n\\toprule\nModel & Calibration & Coverage [95\\% CI] & Non-COVID & COVID \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
@@ -162,18 +160,18 @@ with open("paper/numbers_r2.tex", "w") as fh:
         fh.write(f"\\newcommand{{\\{k}}}{{{v}}}\n")
 
 # ---- figure
-fig, axs = plt.subplots(1, 2, figsize=(7.2, 2.9), gridspec_kw={"width_ratios": [1.15, 1]})
+fig, axs = plt.subplots(1, 2, figsize=size((7.2, 2.9), (7.16, 2.5)), gridspec_kw={"width_ratios": [1.15, 1]})
 ax = axs[0]
 cols = {"CNN ERM": ("#4477aa", "CNN, single", "o"), "Pretrained ERM": ("#ee7733", "Pretrained head, single", "s"), "CNN + pretrained (5+5 ens)": ("#228833", "CNN + pretrained (5+5)", "D")}
 for j, (m, (c, l, mk)) in enumerate(cols.items()):
     y = [R["fold_auroc"][m][h] for h in ALL]
-    ax.scatter(np.arange(8) + (j - 1) * 0.2, y, c=c, s=20, marker=mk, label=l, zorder=3)
+    ax.scatter(np.arange(8) + (j - 1) * 0.2, y, c=c, s=20, marker=mk, label=size(l, {"CNN, single": "CNN", "Pretrained head, single": "Pretrained head", "CNN + pretrained (5+5)": "CNN + pretrained"}[l]), zorder=3)
     ax.axhline(np.mean(y), c=c, lw=0.8, ls=":")
 ax.axvline(3.5, c="gray", lw=0.6)
-ax.set_xticks(range(8)); ax.set_xticklabels([h if h != "Actualmed" else "Actual." for h in ALL], rotation=40, ha="right", fontsize=7)
-ax.set_ylabel("Held-out-site AUROC", fontsize=8); ax.tick_params(axis="y", labelsize=7)
-ax.text(1.5, 0.995, "development", ha="center", fontsize=7, color="gray"); ax.text(5.5, 0.995, "confirmation", ha="center", fontsize=7, color="gray")
-ax.legend(fontsize=5.5, loc="lower center", ncol=3, columnspacing=0.8, handletextpad=0.2, borderpad=0.3); ax.set_ylim(0.47, 1.03); ax.set_title("(a) Per-site AUROC (dotted: mean)", fontsize=8)
+ax.set_xticks(range(8)); ax.set_xticklabels([h if h != "Actualmed" else "Actual." for h in ALL], rotation=40, ha="right", fontsize=FS(7))
+ax.set_ylabel("Held-out-site AUROC", fontsize=FS(8)); ax.tick_params(axis="y", labelsize=FS(7))
+ax.text(1.5, 0.995, "development", ha="center", fontsize=FS(7), color="gray"); ax.text(5.5, 0.995, "confirmation", ha="center", fontsize=FS(7), color="gray")
+ax.legend(fontsize=FS(5.5), loc="lower center", ncol=3, columnspacing=0.8, handletextpad=0.2, borderpad=0.3) if not size(0, 1) else ax.legend(fontsize=FS(8), loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=3, columnspacing=0.6, handletextpad=0.1, frameon=False); ax.set_ylim(0.47, 1.03); title(ax, "(a) Per-site AUROC (dotted: mean)", fontsize=FS(8))
 ax = axs[1]
 xs, labs = [], []
 k = 0
@@ -187,11 +185,11 @@ for name, fm, c in (("CNN", "CNN", "#4477aa"), ("Pretrained", "Pretrained", "#ee
         ax.scatter(np.full(len(v), k) + np.random.RandomState(int(k * 10)).uniform(-.18, .18, len(v)), v, s=7, c="k", zorder=3)
         labs.append(("pooled" if mm == "pooled" else "LSO-CV+")); xs.append(k); k += 1
     k += 0.6
-ax.axhline(0.9, c="gray", ls="--", lw=0.8); ax.set_ylim(0.65, 1.02)
-ax.set_xticks(xs); ax.set_xticklabels(labs, rotation=40, ha="right", fontsize=7); ax.tick_params(axis="y", labelsize=7)
-ax.set_ylabel("Coverage (target 0.90)", fontsize=8)
+ax.axhline(0.9, c="gray", ls="--", lw=0.8); ax.set_ylim(0.65, size(1.02, 1.1)); ax.set_yticks([0.7, 0.8, 0.9, 1.0]) if size(0, 1) else None
+ax.set_xticks(xs); ax.set_xticklabels(labs, rotation=40, ha="right", fontsize=FS(7)); ax.tick_params(axis="y", labelsize=FS(7))
+ax.set_ylabel("Coverage (target 0.90)", fontsize=FS(8))
 for xx, nm in ((0.5, "CNN"), (3.1, "Pretrained"), (5.7, "CNN + pretrained")):
-    ax.text(xx, 1.005, nm, ha="center", fontsize=7)
-ax.set_title("(b) Coverage per site, mean (bar) and sites (dots)", fontsize=8, pad=12)
-fig.tight_layout(); fig.savefig("paper/figures/fig_round2.pdf"); fig.savefig("paper/figures/fig_round2.png", dpi=200); plt.close(fig)
+    ax.text(xx, size(1.005, 1.04), nm, ha="center", fontsize=FS(7))
+title(ax, "(b) Coverage per site, mean (bar) and sites (dots)", fontsize=FS(8), pad=12)
+finish(fig, "fig_round2", axs, ["(a)", "(b)"])
 print("ok", len(MAC), "macros")

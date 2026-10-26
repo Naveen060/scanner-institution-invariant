@@ -1,35 +1,40 @@
-% IEEE two-column manuscript (IEEEtran, journal mode).
+% IEEE two-column manuscript (IEEEtran, journal mode), formatted to the IEEE Transactions author instructions.
+% Figures for this manuscript are in ./figures (FIG_PROFILE=ieee python scripts/final_report.py; same for round2_tables.py).
 % Numbers come from ../numbers.tex (scripts/final_report.py) and ../numbers_r2.tex (scripts/round2_tables.py); do not retype them.
 \documentclass[journal]{IEEEtran}
+\usepackage{mathptmx}  % Times-compatible math so that numbers inside $...$ match the text font
 \usepackage{amsmath,amssymb,booktabs,graphicx,cite,array}
 \usepackage[hidelinks]{hyperref}
-\graphicspath{{../figures/}}
+\graphicspath{{figures/}}
 \input{../numbers}
 \input{../numbers_r2}
 \newcommand{\erm}{ERM}
+\newcommand{\tabnote}[1]{\par\vspace{3pt}{\footnotesize\raggedright #1\par}}
 \newcommand{\tabin}[1]{\input{../tables/#1}}
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.05}
 \hyphenation{Pre-trained}
 
 \begin{document}
+\bstctlcite{IEEEexample:BSTcontrol}
 
 \title{Scanner-Invariant and Institution-Invariant Deep Learning for Reliable Medical Image Diagnosis Across Heterogeneous Clinical Environments}
 
-% TODO(authors): add ORCIDs, funding statement and corresponding author.
-\author{Dr.~K.~Venkateswara~Rao$^{1}$, Ch.~Venkata~Naveen$^{2}$, J.~Harish$^{3}$, and G.~Siva~Rama~Krishna$^{4}$%
-\thanks{$^{1}$Professor, Department of CSE, Vignan's Lara Institute of Technology \& Science, Vadlamudi, Guntur District, Andhra Pradesh, India. $^{2,3,4}$Student, Department of CSE, Vignan's Lara Institute of Technology \& Science, Vadlamudi, Guntur District, Andhra Pradesh, India. Manuscript received XX XX, 2026; revised XX XX, 2026. (Placeholder: add funding statement and corresponding author.)}}
+% TODO(authors): corresponding author, funding statement (IEEE: "This work was supported by ..."), e-mail address, ORCIDs.
+\author{K.~Venkateswara~Rao, Ch.~Venkata~Naveen, J.~Harish, and G.~Siva~Rama~Krishna%
+\thanks{Manuscript received XX XX, 2026; revised XX XX, 2026; accepted XX XX, 2026. (Corresponding author: XX XX.)}%
+\thanks{The authors are with the Department of Computer Science and Engineering, Vignan's Lara Institute of Technology \& Science, Vadlamudi, Guntur District, Andhra Pradesh, India (e-mail: XX).}}
 
 \markboth{Preprint submitted to an IEEE journal}{Rao \MakeLowercase{\textit{et al.}}: Scanner-Invariant and Institution-Invariant Deep Learning for Medical Image Diagnosis}
 
 \maketitle
 
 \begin{abstract}
-Diagnostic image models often lose accuracy at hospitals that were absent from their training data. We asked whether making a model invariant to scanner and institution helps at such hospitals, and whether conformal prediction sets stay valid there. We tested both questions on an open chest-radiograph benchmark (924 images, ten sources, COVID-19 versus other findings), holding out one site at a time. Four sites guided every design decision; the other four were run once, with settings frozen beforehand. Across eight held-out sites, none of eight training methods beat plain empirical risk minimization (ERM) by more than noise, including three variants of our own recipe (SIDL). The largest gain was $+\TGroupdroDiffVsErm$ AUROC (GroupDRO), with an interval that included zero, and the result repeated on a frozen pretrained chest-radiograph encoder. The more useful findings concern evaluation. Five image statistics with no anatomy predicted the diagnosis at unseen sites (AUROC $\profLeakLogreg$). Validation on seen sites overstated held-out AUROC by $\OMeanSignedSeen$, and standard conformal sets covered only $\CPooledCovMean$ of cases at a $0.90$ target (95\% interval $[\RvCnnPooledLo,\RvCnnPooledHi]$), mainly by missing non-COVID cases. Calibrating with sites as cross-validation folds removed the worst shortfalls, with sets about $26\%$ larger. Averaging a CNN with the pretrained model gave the best mean AUROC ($\RtEnsAll$), but most of that lead came from the two smallest test sites, and no accuracy difference survived correction for multiple comparisons. The data are small and cover one modality, and we make no claim about clinical COVID-19 detection.
+Diagnostic image models often lose accuracy at hospitals that were absent from their training data. We asked whether making a model invariant to scanner and institution helps at such hospitals, and whether conformal prediction sets stay valid there. We tested both on an open chest-radiograph benchmark (924 images, ten sources, COVID-19 versus other findings), holding out one site at a time. Four sites guided every design decision; the other four were run once with frozen settings. Across eight held-out sites, none of eight training methods beat empirical risk minimization by more than noise, including three variants of our own recipe. The largest gain, from group distributionally robust optimization, was $+\TGroupdroDiffVsErm$ in the area under the receiver operating characteristic curve, with an interval that included zero, and the result repeated on a frozen pretrained encoder. The more useful findings concern evaluation. Five image statistics with no anatomy predicted the diagnosis at unseen sites (area $\profLeakLogreg$). Validation on seen sites overstated the held-out area by $\OMeanSignedSeen$, and standard conformal sets covered only $\CPooledCovMean$ of cases at a $0.90$ target, mainly by missing cases without COVID-19. Calibrating with sites as cross-validation folds removed the worst shortfalls, with sets about $26\%$ larger. Averaging a convolutional network with the pretrained model gave the best mean area ($\RtEnsAll$), but most of that lead came from the two smallest test sites, and no difference survived correction for multiple comparisons. The data are small, cover one modality, and support no claim about clinical COVID-19 detection.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Chest radiography, conformal prediction, dataset shift, domain generalization, leave-one-site-out evaluation, negative results, uncertainty quantification.
+Conformal prediction, dataset shift, domain generalization, medical diagnostic imaging.
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -37,19 +42,19 @@ Chest radiography, conformal prediction, dataset shift, domain generalization, l
 
 We study four research questions.
 \begin{itemize}\setlength\itemsep{0pt}
-  \item \textbf{RQ1.} Do invariance methods improve AUROC at hospitals unseen in training, when all settings are frozen before the final test?
-  \item \textbf{RQ2.} Does the answer change if the encoder is a frozen, pretrained chest-radiograph network instead of a small CNN trained from scratch?
+  \item \textbf{RQ1.} Do invariance methods improve the area under the receiver operating characteristic curve (AUROC) at hospitals unseen in training, when all settings are frozen before the final test?
+  \item \textbf{RQ2.} Does the answer change if the encoder is a frozen, pretrained chest-radiograph network instead of a small convolutional neural network (CNN) trained from scratch?
   \item \textbf{RQ3.} Do conformal prediction sets keep their nominal coverage at an unseen site, and does calibrating with sites as the unit help?
   \item \textbf{RQ4.} Why do estimates made on seen sites mislead?
 \end{itemize}
 
 The project began as an attempt to build an invariance recipe, which we call SIDL (scanner- and institution-invariant deep learning). It has three parts. The first is a site adversary that works within each class, so that different disease prevalence across hospitals is not penalized~\cite{zhao2019learning}. The second is augmentation that re-renders an image as if it came from another \emph{observed} site, using statistics estimated from the training images without labels. The third is conformal prediction sets calibrated with an unseen site in mind. We evaluated the recipe with leave-one-site-out (LOSO) testing, a development/confirmation split of the sites, and configurations frozen before the confirmation run.
 
-The recipe did not beat \erm{}, and neither did the baseline methods. Because a small network trained from scratch is an easy target for that objection, we repeated the study on top of a frozen pretrained chest-radiograph encoder, and the answer stayed the same. We report this frozen negative result because it is useful to anyone choosing among these methods on small multi-site data, and we pair it with the evaluation findings that explain what went wrong and how to report uncertainty at unseen sites. Our contributions are modest, and we mark novelty carefully because our literature search was targeted and not systematic:
+The recipe did not beat empirical risk minimization (ERM), and neither did the baseline methods. Because a small network trained from scratch is an easy target for that objection, we repeated the study on top of a frozen pretrained chest-radiograph encoder, and the answer stayed the same. We report this frozen negative result because it is useful to anyone choosing among these methods on small multi-site data, and we pair it with the evaluation findings that explain what went wrong and how to report uncertainty at unseen sites. Our contributions are modest, and we mark novelty carefully because our literature search was targeted and not systematic:
 \begin{itemize}\setlength\itemsep{0pt}
   \item a frozen LOSO protocol on open data with a hierarchical paired bootstrap; a negative result for eight methods against \erm{}, repeated on a pretrained encoder family; and a controlled label-shift sweep;
   \item two label-free diagnostics of acquisition shortcuts, one measuring how much the label leaks into image statistics and one measuring how much a model relies on them;
-  \item evidence on calibrating prediction sets for unseen sites, replicated on two encoder families and their ensemble: seen-site validation is optimistic, standard conformal sets under-cover (mostly on non-COVID images), a site-fold CV+ rule avoids the worst cases, and simulated shifts do not reproduce the real effect;
+  \item evidence on calibrating prediction sets for unseen sites, replicated on two encoder families and their ensemble: seen-site validation is optimistic, standard conformal sets under-cover (mostly on non-COVID images), a site-fold cross-validation+ (CV+) rule avoids the worst cases, and simulated shifts do not reproduce the real effect;
   \item a pre-specified comparison showing that averaging a from-scratch CNN with a pretrained model gives a suggestive but not significant gain, which a sensitivity analysis traces mostly to two tiny test sets.
 \end{itemize}
 We do not claim clinical COVID-19 detection performance. The benchmark is a shortcut-prone stress test.
@@ -57,151 +62,178 @@ We do not claim clinical COVID-19 detection performance. The benchmark is a shor
 \section{Related Work}
 \textbf{Shortcuts in chest radiography.} Pneumonia and COVID-19 classifiers rely on site and dataset artifacts~\cite{zech2018variable,pooch2020can}. Masking the lungs barely changes accuracy on public COVID-19 collections~\cite{maguolo2021critic}, classifiers can prefer shortcuts to signal~\cite{degrave2021ai}, and a large review found bias throughout this literature~\cite{roberts2021common,tartaglione2020unveiling}. Our diagnostics follow this line and add a measurement on a held-out site.
 
-\textbf{Invariance and domain generalization.} DANN, conditional adversaries, CORAL, GroupDRO, IRM, and MixStyle all target distribution shift~\cite{ganin2016domain,long2018conditional,sun2016deep,sagawa2020distributionally,arjovsky2019invariant,zhou2021domain}. DomainBed found that, under fair model selection, no method reliably beats \erm{}~\cite{gulrajani2021in}, and WILDS reported similar difficulty on real shifts~\cite{koh2021wilds}. Exact invariance is provably limited when label priors differ across domains~\cite{zhao2019learning}, and methods that handle joint conditional and label shift assume access to target data~\cite{liu2021adversarial,lipton2018detecting}. We work in the setting with no target data. Augmentation work (BigAug, stain augmentation, ComBat) is the closest relative of our site-profile augmentation~\cite{zhang2020generalizing,tellez2019quantifying,johnson2007adjusting}.
+\textbf{Invariance and domain generalization.} Domain-adversarial neural networks (DANN), conditional adversaries, correlation alignment (CORAL), group distributionally robust optimization (GroupDRO), invariant risk minimization (IRM), and MixStyle all target distribution shift~\cite{ganin2016domain,long2018conditional,sun2016deep,sagawa2020distributionally,arjovsky2019invariant,zhou2021domain}. DomainBed found that, under fair model selection, no method reliably beats \erm{}~\cite{gulrajani2021in}, and WILDS reported similar difficulty on real shifts~\cite{koh2021wilds}. Exact invariance is provably limited when label priors differ across domains~\cite{zhao2019learning}, and methods that handle joint conditional and label shift assume access to target data~\cite{liu2021adversarial,lipton2018detecting}. We work in the setting with no target data. Augmentation work (BigAug, stain augmentation, ComBat) is the closest relative of our site-profile augmentation~\cite{zhang2020generalizing,tellez2019quantifying,johnson2007adjusting}.
 
-\textbf{Pretrained encoders and ensembles.} Pretraining on natural images gave limited gains on several medical imaging tasks~\cite{raghu2019transfusion}, while chest-radiograph encoders trained on many public collections are now available as a library~\cite{cohen2022torchxrayvision}. Averaging independently trained networks is a simple way to improve accuracy and uncertainty estimates~\cite{lakshminarayanan2017simple}. We use both ideas as a second test of the same question and do not claim them as new.
+\textbf{Pretrained encoders and ensembles.} Pretraining on natural images gave limited gains on several medical imaging tasks~\cite{raghu2019transfusion}, whereas chest-radiograph encoders trained on many public collections are now available as a library~\cite{cohen2022torchxrayvision}. Averaging independently trained networks is a simple way to improve accuracy and uncertainty estimates~\cite{lakshminarayanan2017simple}. We use both ideas as a second test of the same question and do not claim them as new.
 
-\textbf{Conformal prediction under shift.} Split conformal prediction assumes exchangeability~\cite{vovk2005algorithmic,angelopoulos2023gentle}. Weighted and non-exchangeable versions handle known covariate shift, drift, label shift, and multiple sources~\cite{tibshirani2019conformal,barber2023conformal,podkopaev2021distribution,liu2024multisource}. For unseen domains, calibration against the worst source domain or a divergence ball exists~\cite{zou2024coverage}, and per-domain robust calibration is a baseline in set-valued domain generalization~\cite{tsibulsky2025set}. Coverage failures of conformal sets under domain shift in medical imaging have also been documented~\cite{mehrtens2025pitfalls}. Our worst-site mode is a variant of these and is not new. CV+ comes from jackknife+~\cite{barber2021predictive}. We did not find an evaluation of CV+ with sites as folds on real multi-site medical images, but our search was not exhaustive.
+\textbf{Conformal prediction under shift.} Split conformal prediction assumes exchangeability~\cite{vovk2005algorithmic,angelopoulos2023gentle}. Weighted and non-exchangeable versions handle known covariate shift, drift, label shift, and multiple sources~\cite{tibshirani2019conformal,barber2023conformal,podkopaev2021distribution,liu2024multisource}. For unseen domains, calibration against the worst source domain or a divergence ball exists~\cite{zou2024coverage}, and per-domain robust calibration is a baseline in set-valued domain generalization~\cite{tsibulsky2025set}. Coverage failures of conformal sets under domain shift in medical imaging have also been documented~\cite{mehrtens2025pitfalls}. Our worst-site mode is a variant of these and is not new. The CV+ rule comes from the jackknife+~\cite{barber2021predictive}. We did not find an evaluation of CV+ with sites as folds on real multi-site medical images, but our search was not exhaustive.
 
 \section{Methods}
-\subsection{Setting and training methods}
+\subsection{Setting and Training Methods}
 The data come from $K$ source sites that differ in image acquisition $P_k(X\mid Y)$ and in prevalence $P_k(Y)$. We train, select, and calibrate on the source sites only, and then test on one held-out site. The task is binary (COVID-19 vs.\ other findings). We write $z$ for the encoder output and $s$ for the site index.
 
 All methods share one encoder, optimizer, and training budget. The baselines are \erm{}, GroupDRO (sites as groups), DANN (an unconditional site adversary with weight $0.5$), and generic augmentation (per-sample changes of intensity, gamma, noise, blur, and bias field). We also implemented the following variants, which together make up SIDL.
-\begin{itemize}\setlength\itemsep{0pt}
-  \item \emph{Class-conditional adversary.} One site discriminator per class sits behind a gradient-reversal layer, and each sample goes to the discriminator of its own label: $\mathcal{L}_{\text{adv}}=\mathbb{E}\,\mathrm{CE}(d_y(\mathrm{GRL}_\lambda(z)),s)$. A discriminator that sees only one class cannot exploit prevalence differences. We pair it with per-class CORAL and with site-prior reweighting of the task loss, $w_{s,y}=\pi(y)/\pi_s(y)$.
-  \item \emph{Site-profile augmentation.} We measure five statistics per image (mean, contrast, noise floor, sharpness, and low-frequency bias), summarize them per training site without using labels, and move an image from its own site toward another observed site by applying only the relative change. It is a measurement-driven proxy and not a scanner simulator.
-  \item \emph{Profile adversarial invariance (PAI).} A gradient-reversal head tries to regress the measured profile of the input from $z$.
-  \item \emph{SIDL variants.} SIDL-cc uses generic augmentation, the class-conditional adversary, per-class CORAL, prior reweighting, and a consistency loss between clean and augmented views. SIDL-phys uses site-profile augmentation, an unconditional adversary, pooled CORAL, and the consistency loss. SIDL-full adds the SIDL-cc components to site-profile augmentation.
-\end{itemize}
+
+\emph{Class-conditional adversary.} One site discriminator $d_c$ per class $c$ sits behind a gradient-reversal layer (GRL) with weight $\lambda$, and each sample goes to the discriminator of its own label $y$:
+\begin{equation}\label{eq:adv}
+\mathcal{L}_{\text{adv}}=\mathbb{E}\,\mathrm{CE}\bigl(d_y(\mathrm{GRL}_\lambda(z)),s\bigr),
+\end{equation}
+where CE is the cross-entropy. A discriminator that sees only one class cannot exploit prevalence differences. We pair it with per-class CORAL and with site-prior reweighting of the task loss, which uses the weights
+\begin{equation}\label{eq:prior}
+w_{s,y}=\pi(y)/\pi_s(y),
+\end{equation}
+where $\pi(y)$ is the pooled class prior and $\pi_s(y)$ is the prior at site $s$.
+
+\emph{Site-profile augmentation.} We measure five statistics per image (mean, contrast, noise floor, sharpness, and low-frequency bias), summarize them per training site without using labels, and move an image from its own site toward another observed site by applying only the relative change. It is a measurement-driven proxy and not a scanner simulator.
+
+\emph{Profile adversarial invariance (PAI).} A gradient-reversal head tries to regress the measured profile of the input from $z$.
+
+\emph{SIDL variants.} SIDL-cc uses generic augmentation, the class-conditional adversary~(\ref{eq:adv}), per-class CORAL, prior reweighting~(\ref{eq:prior}), and a consistency loss between clean and augmented views. SIDL-phys uses site-profile augmentation, an unconditional adversary, pooled CORAL, and the consistency loss. SIDL-full adds the SIDL-cc components to site-profile augmentation.
+
 We chose mild settings on the development folds and froze them (augmentation probability $0.3$, strength $0.5$, adversary weight $0.1$ for SIDL and PAI).
 
-\subsection{Second encoder family: frozen pretrained features}
-To check whether the conclusions depend on a small from-scratch CNN, we froze the DenseNet-121~\cite{huang2017densely} chest-radiograph encoder from the TorchXRayVision library~\cite{cohen2022torchxrayvision}. Its ``all'' weights were trained on several public radiograph collections without COVID-19 labels. We extracted the $1024$-dimensional embedding of each $224\times224$ image once and trained only a small head: a linear layer to $256$ units with ReLU and dropout $0.2$, then a linear classifier ($30$ epochs, AdamW, learning rate $10^{-3}$, batch size $64$, best source-validation AUROC). The head was trained with the same methods as above (\erm{}, prior reweighting, GroupDRO, DANN, the class-conditional adversary with and without prior reweighting, CORAL, and the class-conditional recipe without image augmentation) at their default weights ($0.5$ for the adversary, $0.1$ for CORAL). We added per-site feature centering, which subtracts a site mean from the features and uses the unlabeled target images for the held-out site. It is therefore transductive and not comparable with the other heads. Features are standardized with source-site statistics only. An \emph{ensemble} is the mean predicted probability of the models named, and the combined model averages five CNNs and five pretrained heads (seeds $0$--$4$ each).
+\subsection{Second Encoder Family: Frozen Pretrained Features}
+To check whether the conclusions depend on a small from-scratch CNN, we froze the DenseNet-121~\cite{huang2017densely} chest-radiograph encoder from the TorchXRayVision library~\cite{cohen2022torchxrayvision}. Its ``all'' weights were trained on several public radiograph collections without COVID-19 labels. We extracted the $1024$-dimensional embedding of each $224\times224$ image once and trained only a small head: a linear layer to $256$ units with a rectified linear unit (ReLU) and dropout $0.2$, then a linear classifier ($30$ epochs, AdamW, learning rate $10^{-3}$, batch size $64$, best source-validation AUROC). The head was trained with the same methods as above (\erm{}, prior reweighting, GroupDRO, DANN, the class-conditional adversary with and without prior reweighting, CORAL, and the class-conditional recipe without image augmentation) at their default weights ($0.5$ for the adversary, $0.1$ for CORAL). We added per-site feature centering, which subtracts a site mean from the features and uses the unlabeled target images for the held-out site. It is therefore transductive and not comparable with the other heads. Features are standardized with source-site statistics only. An \emph{ensemble} is the mean predicted probability of the models named, and the combined model averages five CNNs and five pretrained heads (seeds $0$--$4$ each).
 
 \subsection{Diagnostics}
 \emph{Leak.} We train a logistic regression on the five profile numbers using the source sites and score it on the held-out site. An AUROC above $0.5$ means that acquisition statistics alone, without anatomy, predict the label. \emph{Reliance.} Within each class, we compute the Spearman correlation between a model's held-out $P(\text{COVID-19})$ and the profile-only score, and average over classes. Working within a class means that the label cannot explain the correlation.
 
-\subsection{Conformal calibration}
-We use the score $1-p_\theta(y\mid x)$~\cite{sadinle2019least} and the sets $\{y: 1-p_\theta(y\mid x)\le\hat q\}$. Three standard variants calibrate on the validation split of the seen source sites: pooled, site-balanced (equal weight per site), and worst-site (the largest per-site quantile among sites with at least $25$ images).
+\subsection{Conformal Calibration}
+We use the score $1-p_\theta(y\mid x)$~\cite{sadinle2019least}, which gives the sets
+\begin{equation}\label{eq:set}
+\mathcal{C}(x)=\{y:\,1-p_\theta(y\mid x)\le\hat q\},
+\end{equation}
+where $\hat q$ is a calibration quantile. Three standard variants calibrate on the validation split of the seen source sites: pooled, site-balanced (equal weight per site), and worst-site (the largest per-site quantile among sites with at least $25$ images).
 
-The leave-site-out (LSO) variants work differently. For every source site $k$, we train an inner model on the other source sites and score \emph{all} images of site $k$ with it. The resulting scores $R_i$ mimic behavior on an unseen site. LSO-split applies the pooled quantile of the $R_i$ to the deployed model, and LSO-worst takes the largest per-site quantile. LSO-CV+ applies the CV+ rule with sites as folds: label $y$ enters the set for a test image $x$ if and only if $\#\{i: R_i<1-p_{-k(i)}(y\mid x)\}<(1-\alpha)(n+1)$, where every inner model scores $x$. CV+ guarantees coverage for exchangeable \emph{points}~\cite{barber2021predictive}. Here the exchangeable units would be sites, we have only nine of them, and we have no theorem, so coverage is measured empirically.
+The leave-site-out (LSO) variants work differently. For every source site $k$, we train an inner model on the other source sites and score \emph{all} images of site $k$ with it. The resulting scores $R_i$ mimic behavior on an unseen site. LSO-split uses the pooled quantile of the $R_i$ as $\hat q$ in~(\ref{eq:set}) for the deployed model, and LSO-worst takes the largest per-site quantile. LSO-CV+ applies the CV+ rule with sites as folds: label $y$ enters the set for a test image $x$ if and only if
+\begin{equation}\label{eq:cvplus}
+\#\{i: R_i<1-p_{-k(i)}(y\mid x)\}<(1-\alpha)(n+1),
+\end{equation}
+where $k(i)$ is the site of calibration image $i$, $p_{-k(i)}$ is the inner model trained without that site, every inner model scores $x$, and $n$ is the number of calibration images. CV+ guarantees coverage for exchangeable \emph{points}~\cite{barber2021predictive}. Here the exchangeable units would be sites, we have only nine of them, and we have no theorem, so coverage is measured empirically.
 
 Besides coverage and mean set size at $\alpha=0.1$, we report the coverage-calibration error (mean $|\text{coverage}-(1-\alpha)|$ over nine values of $\alpha$ from $0.04$ to $0.30$), the fraction of (site, $\alpha$) cells more than five points under target, and the set size interpolated at $90\%$ coverage.
 
 \section{Benchmark and Protocol}
 \subsection{Data}
-We pooled three public GitHub collections of frontal chest radiographs~\cite{cohen2020covid,chung2020actualmed,chung2020figure1}. A site is the institution or country named in the metadata. Small sites are merged into ``Other'', and images with no location form ``Unknown'', so these two groups mix institutions. The label is COVID-19 versus any other finding. Images are intensity-normalized, converted to grayscale, and area-downsampled to $64\times64$ for the CNN and to $224\times224$ for the pretrained encoder. The benchmark has $\datasetTotal$ images from ten sources (Table~\ref{tab:datasets}). Prevalence varies a lot between sources (SD $\priorSpreadSd$), so label shift matters.
-\begin{table}[!t]\centering\scriptsize
-\caption{Benchmark composition. Role is the fold role when the source is held out; Figure1 and Hannover-DE have too few negatives and are only used for training.}\label{tab:datasets}
+We pooled three public GitHub collections of frontal chest radiographs~\cite{cohen2020covid,chung2020actualmed,chung2020figure1}. A site is the institution or country named in the metadata. Small sites are merged into ``Other'', and images with no location form ``Unknown'', so these two groups mix institutions. The label is COVID-19 versus any other finding. Images are intensity-normalized, converted to grayscale, and area-downsampled to $64\times64$ for the CNN and to $224\times224$ for the pretrained encoder. The benchmark has $\datasetTotal$ images from ten sources (Table~\ref{tab:datasets}). Prevalence varies a lot between sources (standard deviation $\priorSpreadSd$), so label shift matters. Only public, de-identified images were used, and no new data were collected from human participants. The scripts that rebuild the benchmark, the frozen configurations, and the per-run results are available online~\cite{rao2026sidlcode}.
+\begin{table}[!t]\centering\footnotesize
+\caption{Benchmark Composition}\label{tab:datasets}
 \tabin{datasets.tex}
+\tabnote{Role is the fold role when the source is held out. Figure1 and Hannover-DE have too few negatives and are used only for training.}
 \end{table}
 
-\subsection{Folds and freezing}
+\subsection{Folds and Freezing}
 Eight sources were each held out once. Figure1 and Hannover-DE, which have only 5 and 3 negative images, were used for training only. Before looking at any confirmation result, we assigned four held-out sites to development (Actualmed, Italy, China, and Spain) and four to confirmation (UK, Australia, Other, and Unknown). The split was not randomized. Every design decision used development folds only. When the CNN study was complete, we froze nine CNN configurations and ran them once on the confirmation folds. Validation (a patient-level $15\%$ split) and checkpoint choice (best source-validation AUROC) never touched the held-out site. The label-free diagnostics are one descriptive exception: we computed them once over all eight sites at the start, they involved no tuned model, and no choice among methods used them.
 
-We added the pretrained family afterward under the same rules. Its head settings were examined on the development folds only (seven settings gave a mean AUROC of $0.737$--$0.743$, so we kept the defaults). Before its first confirmation run, we wrote down the settings of all nine heads and two primary comparisons: (A) the combined ensemble against the five-CNN ensemble, and (B) the same ensemble against a single CNN. We then ran the confirmation folds once. Two disclosures apply. The CNN confirmation results were already known when we designed the pretrained family, and three further CNN \erm{} seeds were run after the freeze, with an unchanged configuration, so that both families have five seeds. The robustness checks of Section~\ref{sec:robust} were added once all main results were in, and they changed no setting.
+We added the pretrained family afterward under the same rules. Its head settings were examined on the development folds only (seven settings gave a mean AUROC of $0.737$--$0.743$, so we kept the defaults). Before its first confirmation run, we wrote down the settings of all nine heads and two primary comparisons: (A) the combined ensemble against the five-CNN ensemble, and (B) the same ensemble against a single CNN. We then ran the confirmation folds once. Two disclosures apply. The CNN confirmation results were already known when we designed the pretrained family, and three further CNN \erm{} seeds were run after the freeze, with an unchanged configuration, so that both families have five seeds. The robustness checks of Section~\ref{sec:robust} were added once all main results were in, and they changed no setting. A pilot run that touched two confirmation sites was never used for any decision and is excluded, and every experiment, including the failures, is logged with the code~\cite{rao2026sidlcode}.
 
-\subsection{Models and statistics}
-The CNN encoder has four conv--BatchNorm--ReLU--max-pool blocks (widths 16--64). We trained it from scratch with AdamW (learning rate $2\times10^{-3}$), batch size 64, and 15 epochs, using two seeds for the nine-method comparison and five seeds for \erm{} in the family comparison. Each run took 25--80\,s on two CPU cores.
+\subsection{Models and Statistics}
+The CNN encoder has four blocks of convolution, batch normalization, ReLU, and max pooling (widths 16--64). We trained it from scratch with AdamW (learning rate $2\times10^{-3}$), batch size 64, and 15 epochs, using two seeds for the nine-method comparison and five seeds for \erm{} in the family comparison. Each run took 25--80\,s on two processor cores.
 
 The unit of generalization is the held-out site. For each method versus \erm{}, we take the paired AUROC difference (seed-averaged) per site and bootstrap hierarchically. We resample sites, and then resample the test images within each chosen site, stratified by class and using the same images for both methods ($1500$ replicates, or $2000$ for the family comparison). This interval is wider than a bootstrap over sites alone, which matters because some sites are tiny (Australia has 6 COVID-19 images, and China has 5 negatives). For the label-shift and acquisition-shift experiments, we also build a semisynthetic benchmark: images are assigned at random to five virtual sites with known transforms (gamma, contrast, blur, noise, and bias field) and a controlled prior spread. Because the family comparison averages five CNN seeds, the CNN \erm{} mean over eight sites is $\RtCnnAll$ there and $\TErmAurocAll$ (two seeds) in Table~\ref{tab:main}.
 
 \section{Results}
-\subsection{Acquisition statistics leak labels}
+\subsection{Acquisition Statistics Leak Labels}
 Five numbers with no anatomy predicted the diagnosis at held-out sites with a mean AUROC of $\profLeakLogreg$ (gradient boosting: $\profLeakGbm$; Fig.~\ref{fig:diag}). The same numbers identified the source site with an accuracy of $\siteAccProfile$, against $\siteAccChance$ for always guessing the majority site. Re-measuring the leak on site-profile-augmented training images did not reduce it ($0.662\to0.660$). The label-correlated signal therefore seems to sit mostly \emph{within} sites, for example in portable versus fixed acquisition or in patient severity, and not in site-level signatures that augmentation could randomize.
 
 Model scores follow the same signal. Within-class reliance is $\relErm$ for \erm{} and lies between $\relSiteProfileAug$ and $\relSidlFull$ for the other methods. Site-profile augmentation and PAI lowered it only slightly ($\relSiteProfileAug$ and $\relProfileAdversaryPai$). The two methods that combine a class-conditional adversary with prior reweighting had the highest values ($\relSidlCc$ and $\relSidlFull$).
 \begin{figure*}[!t]\centering
-\includegraphics[width=0.92\textwidth]{fig_diagnostics.pdf}
-\caption{Left: COVID-19 prevalence per data source. Right: AUROC for predicting the diagnosis on a held-out site from five acquisition statistics alone.}\label{fig:diag}
+\includegraphics[width=\textwidth]{fig_diagnostics.pdf}
+\caption{(a) COVID-19 prevalence per data source. (b) AUROC for predicting the diagnosis on a held-out site from five acquisition statistics alone; the dotted line marks chance (0.5).}\label{fig:diag}
 \end{figure*}
 
-\subsection{No method significantly beats ERM}
-\erm{} reached an AUROC of $\TErmAurocDev$ on the development folds and $\TErmAurocConf$ on the confirmation folds (Table~\ref{tab:main}, Fig.~\ref{fig:methods}). Paired differences to \erm{} are small, and every interval includes zero. GroupDRO is nominally best at $+\TGroupdroDiffVsErm$ [$\TGroupdroLo$, $\TGroupdroHi$], followed by SIDL-phys at $+\TSidlPhysDiffVsErm$ [$\TSidlPhysLo$, $\TSidlPhysHi$]. The other six methods sit at or below \erm{}, and SIDL-full, the variant that combines all components, is the lowest at $\TSidlFullDiffVsErm$ [$\TSidlFullLo$, $\TSidlFullHi$]. The upper bounds rule out gains above about $0.055$ for every method.
+\subsection{No Method Significantly Beats ERM}
+\erm{} reached an AUROC of $\TErmAurocDev$ on the development folds and $\TErmAurocConf$ on the confirmation folds (Table~\ref{tab:main}, Fig.~\ref{fig:methods}). Paired differences to \erm{} are small, and every interval includes zero. GroupDRO is nominally best at $+\TGroupdroDiffVsErm$ [$\TGroupdroLo$, $\TGroupdroHi$], followed by SIDL-phys at $+\TSidlPhysDiffVsErm$ [$\TSidlPhysLo$, $\TSidlPhysHi$]. The other six methods sit at or below \erm{}, and SIDL-full, the variant that combines all components, is the lowest at $\TSidlFullDiffVsErm$ [$\TSidlFullLo$, $\TSidlFullHi$]. The upper bounds rule out gains above about $0.055$ for every method. Per-site values are listed in Appendix~\ref{app:perfold} (Table~\ref{tab:perfold}).
 
-Rankings are unstable: method means correlate only $\rankCorrDevConf$ (Spearman) between the development and confirmation folds. Site-profile augmentation tied \erm{} on development folds ($\TSiteProfileAugAurocDev$ vs.\ $\TErmAurocDev$) and fell below it on confirmation folds ($\TSiteProfileAugAurocConf$ vs.\ $\TErmAurocConf$), while SIDL-phys moved the other way. GroupDRO also has a higher balanced accuracy ($\TGroupdroBalAcc$ vs.\ $\TErmBalAcc$) and a better worst-site AUROC ($\TGroupdroWorstFold$ vs.\ $\TErmWorstFold$). We treat both as exploratory, because \erm{}'s worst site has only 6 positives, PAI does not share the gain, and balanced accuracy depends on an operating point that group reweighting shifts. In pilot runs, whole-batch full-strength augmentation cost up to $0.083$ AUROC on the development folds ($0.675$ vs.\ $0.758$). Making the augmentation per-sample and mild removed the drop but never produced a gain.
-\begin{table}[!t]\centering\scriptsize
-\caption{LOSO task metrics for the CNN (mean over held-out sites of the two-seed mean). $\Delta$ is the paired AUROC difference to \erm{} over eight sites with a hierarchical bootstrap 95\% interval. ``Worst fold'' is the lowest per-site AUROC. Balanced accuracy and ECE use the argmax decision.}\label{tab:main}
-\resizebox{\columnwidth}{!}{\tabin{main.tex}}
-\end{table}
+Rankings are unstable: method means correlate only $\rankCorrDevConf$ (Spearman) between the development and confirmation folds. Site-profile augmentation tied \erm{} on development folds ($\TSiteProfileAugAurocDev$ vs.\ $\TErmAurocDev$) and fell below it on confirmation folds ($\TSiteProfileAugAurocConf$ vs.\ $\TErmAurocConf$), whereas SIDL-phys moved the other way. GroupDRO also has a higher balanced accuracy ($\TGroupdroBalAcc$ vs.\ $\TErmBalAcc$) and a better worst-site AUROC ($\TGroupdroWorstFold$ vs.\ $\TErmWorstFold$). We treat both as exploratory, because \erm{}'s worst site has only 6 positives, PAI does not share the gain, and balanced accuracy depends on an operating point that group reweighting shifts. In pilot runs, whole-batch full-strength augmentation cost up to $0.083$ AUROC on the development folds ($0.675$ vs.\ $0.758$). Making the augmentation per-sample and mild removed the drop but never produced a gain.
+\begin{table*}[!t]\centering\footnotesize
+\caption{Leave-One-Site-Out Task Metrics for the CNN}\label{tab:main}
+\tabin{main.tex}
+\tabnote{Mean over held-out sites of the two-seed mean. $\Delta$ is the paired AUROC difference to ERM over eight sites with a hierarchical bootstrap 95\% interval. Worst fold is the lowest per-site AUROC. Balanced accuracy and the expected calibration error (ECE) use the argmax decision.}
+\end{table*}
 \begin{figure*}[!t]\centering
-\includegraphics[width=0.8\textwidth]{fig_methods.pdf}
-\caption{Held-out AUROC per CNN method (dots: sites; bar and line: mean and bootstrap interval over sites).}\label{fig:methods}
+\includegraphics[width=\textwidth]{fig_methods.pdf}
+\caption{Held-out AUROC per CNN method. Markers show sites (circles: development; triangles: confirmation); the horizontal bar and vertical line show the mean and the bootstrap interval over sites, and the dotted line marks the ERM mean.}\label{fig:methods}
 \end{figure*}
 
-\subsection{Controlled label shift}
+\subsection{Controlled Label Shift}
 On the semisynthetic benchmark, where image content is identical and the transforms are known, DANN, cDANN, and cDANN with prior reweighting all lose to \erm{} at the largest prior spread ($0.4$): $\synthDiffDann$ [$\synthDiffDannLo$, $\synthDiffDannHi$], $\synthDiffCdann$ [$\synthDiffCdannLo$, $\synthDiffCdannHi$], and $\synthDiffCdannP$ [$\synthDiffCdannPLo$, $\synthDiffCdannPHi$]. Reweighting alone is neutral ($\synthDiffErmP$). The ordering matches theory, with unconditional alignment hurting most and class-conditional alignment with reweighting hurting least. At weight $0.5$, however, the adversaries already lose $0.02$--$0.06$ AUROC with no label shift at all. Lowering the weight moves them toward \erm{} and never above it, and the sign of cDANN's advantage over DANN flips across weights. With six units per cell, we cannot claim that the class-conditional version helps (Table~\ref{tab:synthls}).
-\begin{table}[!t]\centering\scriptsize
-\caption{Semisynthetic label-shift sweep: held-out AUROC (virtual sites V0, V2, V4, two seeds, adversary weight $0.5$).}\label{tab:synthls}
-\resizebox{\columnwidth}{!}{\tabin{synth_labelshift.tex}}
+\begin{table}[!t]\centering\footnotesize
+\caption{Semisynthetic Label-Shift Sweep}\label{tab:synthls}
+\tabin{synth_labelshift.tex}
+\tabnote{Held-out AUROC on virtual sites V0, V2, and V4 (two seeds, adversary weight $0.5$).}
 \end{table}
 
-\subsection{A frozen pretrained encoder gives the same answer}
+\subsection{A Frozen Pretrained Encoder Gives the Same Answer}
 Replacing the CNN with a frozen chest-radiograph encoder did not change the conclusion. Over eight sites, the pretrained head is not clearly better than the CNN (AUROC $\RtPreAll$ vs.\ $\RtCnnAll$; difference $\RtPreVsCnnAll$ [$\RtPreVsCnnAllLo$, $\RtPreVsCnnAllHi$]). It is better at five sites, most clearly Australia and China, and worse at Actualmed, Italy, and UK (Fig.~\ref{fig:round2}a). Its standing against the CNN also differs between fold sets ($\RtPreDev$ vs.\ $\RtCnnDev$ on development, $\RtPreConf$ vs.\ $\RtCnnConf$ on confirmation).
 
 None of the invariance heads beat \erm{} on the embedding (Table~\ref{tab:heads}). GroupDRO again had the largest gain, $\RtGdroDiff$ [$\RtGdroLo$, $\RtGdroHi$] ($\RtGdroDev$ on development folds and $\RtGdroConf$ on confirmation folds). Its interval touches zero, and it is the best of nine uncorrected comparisons. The class-conditional adversary, CORAL, DANN, and prior reweighting stayed within $0.006$ of \erm{}. Adversary plus prior reweighting was lower ($\RtCdannPDiff$), and site centering, which needs unlabeled target images, was clearly worse ($\RtCenterDiff$ [$\RtCenterLo$, $\RtCenterHi$]). Every upper bound was below $0.04$. The embedding still carries site information: a patient-grouped linear classifier names the source among ten with an accuracy of $\RdSiteAcc$ ($\RdSiteMaj$ for the majority source).
-\begin{table}[!t]\centering\scriptsize
-\caption{Training methods on the frozen pretrained embedding (five seeds; settings fixed before the confirmation run). $\Delta$ is the paired AUROC difference to the pretrained \erm{} head over eight sites with a hierarchical bootstrap 95\% interval.}\label{tab:heads}
-\resizebox{\columnwidth}{!}{\tabin{r2_heads.tex}}
+\begin{table}[!t]\centering\footnotesize\setlength{\tabcolsep}{1.5pt}
+\caption{Training Methods on the Frozen Pretrained Embedding}\label{tab:heads}
+\tabin{r2_heads.tex}
+\tabnote{Five seeds; settings fixed before the confirmation run. $\Delta$ is the paired AUROC difference to the pretrained ERM head over eight sites with a hierarchical bootstrap 95\% interval.}
 \end{table}
 
-\subsection{Combining the two encoder families}
+\subsection{Combining the Two Encoder Families}
 The two model families fail at different sites. The CNN is weakest on Australia and Other, and the pretrained head on Actualmed and UK. Averaging five CNNs with five pretrained heads gave the best mean and the best worst-site AUROC (Table~\ref{tab:models}, Fig.~\ref{fig:round2}a). Both pre-specified comparisons pointed the same way on both fold sets, and neither was significant. Against the five-CNN ensemble the difference is $\RtEnsVsCnnEnsAll$ [$\RtEnsVsCnnEnsAllLo$, $\RtEnsVsCnnEnsAllHi$] (development $\RtEnsVsCnnEnsDev$, confirmation $\RtEnsVsCnnEnsConf$), and against a single CNN it is $\RtEnsVsCnnAll$ [$\RtEnsVsCnnAllLo$, $\RtEnsVsCnnAllHi$] (development $\RtEnsVsCnnDev$, confirmation $\RtEnsVsCnnConf$).
 
 Three cautions apply. On the confirmation folds, the pretrained five-head ensemble was as good as the combination ($\RtPreEnsConf$ vs.\ $\RtEnsConf$), so the data cannot separate ``combining helps'' from ``pretraining helps''. Seed averaging alone also helps: the five-CNN ensemble beats the single CNN by $\RtCnnEnsVsCnnAll$ [$\RtCnnEnsVsCnnAllLo$, $\RtCnnEnsVsCnnAllHi$]. Finally, the lead over a single CNN depends heavily on the two smallest test sets (Section~\ref{sec:robust}). We treat the combination as a suggestive direction and not as a result.
-\begin{table}[!t]\centering\scriptsize
-\caption{Encoder families and their ensembles, held-out AUROC averaged over the four development sites, the four confirmation sites, and all eight (five seeds). $\Delta$ is the paired difference to the single CNN with a hierarchical bootstrap 95\% interval (2000 replicates).}\label{tab:models}
-\resizebox{\columnwidth}{!}{\tabin{r2_models.tex}}
-\end{table}
+\begin{table*}[!t]\centering\footnotesize
+\caption{Encoder Families and Their Ensembles}\label{tab:models}
+\tabin{r2_models.tex}
+\tabnote{Held-out AUROC averaged over the four development sites, the four confirmation sites, and all eight (five seeds). $\Delta$ is the paired difference to the single CNN with a hierarchical bootstrap 95\% interval (2000 replicates).}
+\end{table*}
 \begin{figure*}[!t]\centering
-\includegraphics[width=0.86\textwidth]{fig_round2.pdf}
+\includegraphics[width=\textwidth]{fig_round2.pdf}
 \caption{(a) Held-out AUROC for the single CNN, the single pretrained head, and their combination at each site; dotted lines are means over eight sites. (b) Conformal coverage on each held-out site at $\alpha=0.1$ for seen-site pooled and LSO-CV+ calibration (bars: mean of eight sites; dots: sites; dashed: target).}\label{fig:round2}
 \end{figure*}
 
-\subsection{Conformal sets under-cover unseen sites}
+\subsection{Conformal Sets Under-Cover Unseen Sites}
 Sets calibrated on seen-site validation data miss the target (Table~\ref{tab:conf}, Fig.~\ref{fig:conf}). Mean coverage at the $0.90$ target is $\CPooledCovMean$ for pooled and $\CSiteBalancedCovMean$ for site-balanced calibration. The worst site gets about $\CPooledCovMin$, and $\CPooledNUnder$ of $\CPooledN$ sites are more than five points short. The pattern appears in both fold sets (pooled coverage is $0.829$ on development and $0.843$ on confirmation folds).
 
 Worst-site calibration restores the mean ($\CWorstSiteCovMean$) but leaves two sites short, with the lowest coverage ($\CWorstSiteCovMin$) at ``Other''. LSO-CV+ reaches a mean coverage of $\CLsoCvplusCovMean$, and its lowest site coverage is $\CLsoCvplusCovMin$, with no site more than five points short. Its mean set size is $\CLsoCvplusSize$, against $\CPooledSize$ for pooled calibration. It over-covers at most sites. LSO-split lands nearer the target on average ($\CLsoSplitCovMean$) but leaves one site at $\CLsoSplitCovMin$.
 
-These calibrations differ in operating point and not in efficiency. Interpolated at $90\%$ coverage, set size lies between $\CLsoSplitSizeAtCov$ and $\CSiteBalancedSizeAtCov$ for \emph{every} calibration (pooled $\CPooledSizeAtCov$, LSO-CV+ $\CLsoCvplusSizeAtCov$). The development folds had suggested that LSO-CV+ was about $4\%$ smaller at matched coverage, and the confirmation folds did not repeat that. Its benefit is therefore safety. Whether sets about $26\%$ larger are worth a six-point average shortfall (up to sixteen points at the worst site) depends on the application. Two other ideas failed on development folds and were dropped. One weighted the calibration scores by a density ratio of the acquisition profile (coverage $0.834$ vs.\ $0.829$ for pooled). The other corrected for estimated label shift~\cite{saerens2002adjusting,podkopaev2021distribution} (coverage $0.813$ with an EM prior and $0.845$ with the oracle prior, with worse balanced accuracy).
-\begin{table}[!t]\centering\scriptsize
-\caption{Conformal prediction for the CNN \erm{} model on eight held-out sites, $\alpha=0.1$ (target $0.90$; two seeds). ``Folds $<$0.85'' counts sites with more than five points under target; the last three columns use the $\alpha$ grid. Rows 1--3 were calibrated on the seen-site validation data, and rows 4--8 used leave-site-out scores.}\label{tab:conf}
-\resizebox{\columnwidth}{!}{\tabin{conformal.tex}}
-\end{table}
+These calibrations differ in operating point and not in efficiency. Interpolated at $90\%$ coverage, set size lies between $\CLsoSplitSizeAtCov$ and $\CSiteBalancedSizeAtCov$ for \emph{every} calibration (pooled $\CPooledSizeAtCov$, LSO-CV+ $\CLsoCvplusSizeAtCov$). The development folds had suggested that LSO-CV+ was about $4\%$ smaller at matched coverage, and the confirmation folds did not repeat that. Its benefit is therefore safety. Whether sets about $26\%$ larger are worth a six-point average shortfall (up to sixteen points at the worst site) depends on the application. Two other ideas failed on development folds and were dropped. One weighted the calibration scores by a density ratio of the acquisition profile (coverage $0.834$ vs.\ $0.829$ for pooled). The other corrected for estimated label shift~\cite{saerens2002adjusting,podkopaev2021distribution} (coverage $0.813$ with an expectation--maximization prior and $0.845$ with the oracle prior, with worse balanced accuracy).
+\begin{table*}[!t]\centering\footnotesize
+\caption{Conformal Prediction for the CNN ERM Model}\label{tab:conf}
+\tabin{conformal.tex}
+\tabnote{Eight held-out sites, $\alpha=0.1$ (target $0.90$), two seeds. Folds $<$0.85 counts sites with more than five points under target; the last three columns use the $\alpha$ grid. Rows 1--3 were calibrated on the seen-site validation data, and rows 4--8 used leave-site-out scores.}
+\end{table*}
 \begin{figure*}[!t]\centering
-\includegraphics[width=0.92\textwidth]{fig_conformal.pdf}
-\caption{Left: coverage of each held-out site at $\alpha=0.1$ (bar: mean). Right: coverage versus set size over the $\alpha$ grid; all calibrations lie on nearly one curve.}\label{fig:conf}
+\includegraphics[width=\textwidth]{fig_conformal.pdf}
+\caption{(a) Coverage of each held-out site at $\alpha=0.1$ (vertical bar: mean; dotted line: $0.90$ target). (b) Coverage versus mean set size over the $\alpha$ grid; all calibrations lie on nearly one curve.}\label{fig:conf}
 \end{figure*}
 
 \emph{The same holds for the pretrained head and the ensemble} (Table~\ref{tab:confall}, Fig.~\ref{fig:round2}b). Pooled coverage is $\RcPrePooledCov$ for the pretrained head and $\RcEnsPooledCov$ for the ensemble, with $\RcPrePooledUnder$ of 8 sites more than five points short in both. LSO-CV+ reaches $\RcPreCvplusCov$ and $\RcEnsCvplusCov$ with no such site. A better ranking model therefore does not close the coverage gap. At matched $90\%$ coverage, the ensemble's sets are somewhat smaller ($\RcEnsPooledSninety$--$\RcEnsCvplusSninety$ against $\RcCnnPooledSninety$--$\RcCnnCvplusSninety$ for the CNN). The paired per-site difference for LSO-CV+ is $\RcEnsCnnCvplusDiff$ [$\RcEnsCnnCvplusLo$, $\RcEnsCnnCvplusHi$], with smaller sets at $\RcEnsCnnCvplusN$ of 8 sites, so we again call it a direction.
 
-\begin{table*}[!t]\centering\scriptsize
-\caption{Conformal calibration across model families at $\alpha=0.1$ (eight sites, two seeds). Cov.\ is mean coverage with, in parentheses, the number of sites more than five points under the $0.90$ target; Size is mean set size; @90\% is set size interpolated at $90\%$ coverage over the $\alpha$ grid.}\label{tab:confall}
+\begin{table*}[!t]\centering\footnotesize
+\caption{Conformal Calibration Across Model Families}\label{tab:confall}
 \tabin{r2_conformal.tex}
+\tabnote{Eight sites, two seeds, $\alpha=0.1$. Cov.\ is mean coverage with, in parentheses, the number of sites more than five points under the $0.90$ target; Size is mean set size; @90\% is set size interpolated at $90\%$ coverage over the $\alpha$ grid.}
 \end{table*}
 
-\subsection{Why: validation optimism}
+\subsection{Why: Validation Optimism}
 For the CNN \erm{} model, we compared three AUROC values: the one on seen-site validation data, the leave-site-out estimate (inner models scored on the sites they did not see), and the actual held-out AUROC (Fig.~\ref{fig:optim}). Over $\ONUnits$ site-seed units, seen-site validation overstates held-out AUROC by $\OMeanSignedSeen$ on average (absolute error $\OMaeSeen$). The leave-site-out estimate is nearly unbiased ($\OMeanSignedLso$; absolute error $\OMaeLso$). The pretrained head shows the same optimism ($\RdValAuc$ on seen-site validation vs.\ $\RdTestAuc$ on held-out sites, a gap of $\RdOptim$ over 40 units).
 
-Neither estimate ranks the sites (Spearman correlation with actual AUROC for the CNN: $\ORhoSeen$ and $\ORhoLso$). Actual AUROC ranges from $0.56$ to $0.86$, while the leave-site-out estimate stays between $0.72$ and $0.75$, so it describes a typical unseen site and not a particular one. The per-site optimism gap and pooled-conformal coverage are rank-correlated in the expected direction ($\ORhoGapCov$ over eight sites). That is consistent with optimism driving under-coverage, but it is not significant at this sample size. Averaging the inner models, a free by-product, gives an AUROC of $\ensAurocEns$ vs.\ $\ensAurocFull$ for the single model ($\ensDAuroc$ [$\ensDAurocLo$, $\ensDAurocHi$]), which is no significant gain.
+Neither estimate ranks the sites (Spearman correlation with actual AUROC for the CNN: $\ORhoSeen$ and $\ORhoLso$). Actual AUROC ranges from $0.56$ to $0.86$, whereas the leave-site-out estimate stays between $0.72$ and $0.75$, so it describes a typical unseen site and not a particular one. The per-site optimism gap and pooled-conformal coverage are rank-correlated in the expected direction ($\ORhoGapCov$ over eight sites). That is consistent with optimism driving under-coverage, but it is not significant at this sample size. Averaging the inner models, a free by-product, gives an AUROC of $\ensAurocEns$ vs.\ $\ensAurocFull$ for the single model ($\ensDAuroc$ [$\ensDAurocLo$, $\ensDAurocHi$]), which is no significant gain.
 \begin{figure}[!t]\centering
 \includegraphics[width=\columnwidth]{fig_optimism.pdf}
 \caption{AUROC of the CNN \erm{} model estimated on the seen-site validation data, by leave-site-out models, and obtained on the held-out site (two-seed mean).}\label{fig:optim}
 \end{figure}
 
-\subsection{Simulated shifts are poor stand-ins}
+\subsection{Simulated Shifts Are Poor Stand-Ins}
 On the semisynthetic benchmark with three acquisition-severity levels, seen-site pooled calibration already covers $0.896$--$0.922$ at the $0.90$ target, unlike the $\CPooledCovMean$ on real sites. The LSO variants are no better, and LSO-split under-covers at the highest severity ($0.834$, with the worst site at $0.688$). The real under-coverage therefore probably comes from differences between sites that our simulation lacks, such as patient mix, case selection, labeling, and image provenance. A calibration method that was checked only on simulated acquisition shifts would have looked fine.
 
-\subsection{Robustness checks}\label{sec:robust}
+\subsection{Robustness Checks}\label{sec:robust}
 We added four checks that a careful reviewer would ask for. None changed a setting or any result reported above.
 
 \emph{How uncertain is the coverage?} Table~\ref{tab:covci} gives hierarchical-bootstrap intervals for the mean coverage at $\alpha=0.1$. With pooled calibration, the interval excludes the $0.90$ target for all three model families, and at most $\RvMaxPAbove$ of the bootstrap replicates reach $0.90$. The LSO-CV+ intervals sit at or above the target (the ensemble's lower end is $\RvEnsCvplusLo$). Worst-site and LSO-split calibration cannot be told apart from the target: for the CNN, worst-site coverage is $\CWorstSiteCovMean$ with an interval of $[\RvCnnWorstLo, \RvCnnWorstHi]$.
 
 \emph{Which class is missed?} The shortfall is not spread evenly. With pooled calibration, non-COVID images are covered $\RvCnnPooledOther$--$\RvEnsPooledOther$ of the time, but COVID images $\RvCnnPooledCovid$--$\RvEnsPooledCovid$ (Table~\ref{tab:covci}). LSO-CV+ brings non-COVID coverage to $\RvEnsCvplusOther$--$\RvCnnCvplusOther$ and over-covers COVID images ($\RvCnnCvplusCovid$--$\RvEnsCvplusCovid$). A marginal guarantee can therefore hide a large gap in one class.
-\begin{table}[!t]\centering\scriptsize
-\caption{Conformal coverage at $\alpha=0.1$: mean over eight held-out sites with a hierarchical bootstrap 95\% interval (3000 replicates, seeds averaged), and mean coverage within each class (over sites with at least five images of the class).}\label{tab:covci}
-\resizebox{\columnwidth}{!}{\tabin{r2_coverage_ci.tex}}
+\begin{table}[!t]\centering\footnotesize\setlength{\tabcolsep}{1.5pt}
+\caption{Conformal Coverage With Bootstrap Intervals}\label{tab:covci}
+\tabin{r2_coverage_ci.tex}
+\tabnote{Mean over eight held-out sites at $\alpha=0.1$ with a hierarchical bootstrap 95\% interval (3000 replicates, seeds averaged), and mean coverage within each class (over sites with at least five images of the class). Pooled calibration uses the seen-site validation data.}
 \end{table}
 
 \emph{What if the two tiny sites are removed?} China has 5 negative images and Australia has 6 positive ones. On the remaining six sites, every CNN method lies within $[\RvSixCnnWorstDiffMin, \RvSixCnnDiffMax]$ of \erm{}, and the GroupDRO gain falls from $+\TGroupdroDiffVsErm$ to $\RvSixGdroCnn$ [$\RvSixGdroCnnLo$, $\RvSixGdroCnnHi$]. On the pretrained embedding, GroupDRO rises to $\RvSixGdroPre$ [$\RvSixGdroPreLo$, $\RvSixGdroPreHi$], the only six-site interval that excludes zero. We picked that subset after seeing the results, so we do not treat it as confirmatory. The ensemble's lead over a single CNN shrinks from $\RtEnsVsCnnAll$ to $\RvSixEnsCnn$ [$\RvSixEnsCnnLo$, $\RvSixEnsCnnHi$], because its per-site gains are largest at Australia and China (Fig.~\ref{fig:round2}a). Its worst-site advantage persists in a smaller form ($\RvSixWorstEns$, against $\RvSixWorstCnn$ for the CNN and $\RvSixWorstPre$ for the pretrained head). The coverage findings do not depend on these two sites. On the six sites, pooled coverage is $\RvSixCnnPooled$, $\RvSixPrePooled$, and $\RvSixEnsPooled$ for the CNN, pretrained head, and ensemble, against $\RvSixCnnCvplus$, $\RvSixPreCvplus$, and $\RvSixEnsCvplus$ for LSO-CV+.
@@ -209,44 +241,37 @@ We added four checks that a careful reviewer would ask for. None changed a setti
 \emph{Does anything survive multiple testing?} The second study made $\RvNComparisons$ comparisons: eight heads against \erm{}, the ensemble against the CNN, the ensemble against the five-CNN ensemble, and the pretrained head against the CNN. The smallest two-sided bootstrap $p$-value is $0.028$, for site centering, which is worse than \erm{}. GroupDRO follows at $\RvRawGdro$. After Holm correction, the smallest adjusted $p$-value is $\RvHolmMin$ (GroupDRO: $\RvHolmGdro$), so no difference is significant. The eight CNN comparisons already have intervals that include zero without any correction.
 
 \section{Discussion}
-\subsection{What the evidence supports}
+\subsection{What the Evidence Supports}
 On this benchmark, no training method reliably improved held-out AUROC. That covers augmentation, site and profile adversaries, CORAL, and GroupDRO, applied to a small CNN trained from scratch (gains above about $0.055$ are unlikely) and to heads on a frozen pretrained encoder (gains above about $0.04$ are unlikely). GroupDRO had the largest nominal gain in both families, but the CNN gain disappears when the two smallest test sites are removed, and the pretrained gain does not survive correction for multiple comparisons. Acquisition statistics leak the label across sites, and model scores follow them within class. Still, the methods that reduce this reliance did not improve accuracy, so we cannot say that the shortcut explains the accuracy loss.
 
 The findings on uncertainty are firmer. Seen-site validation is optimistic, standard conformal sets under-cover unseen sites (the intervals exclude the target), and leave-site-out calibration avoids the worst shortfalls by paying in set size. This held for two encoder families and their ensemble. We suspect that invariance fails here because the data are tiny (sites of 52--207 images), the label-correlated signal sits mostly within sites, and adversaries add optimization noise that small heads cannot afford. We did not test these explanations.
 
-\subsection{Practical guidance}
+\subsection{Practical Guidance}
 Three suggestions follow for anyone building a multi-site model. First, report leave-one-site-out results with intervals that respect small sites, and keep the sites used for the final report out of tuning. Seen-site validation overstated AUROC by $\OMeanSignedSeen$ here. Second, treat nominal coverage from seen-site calibration as optimistic for unseen sites. On this benchmark it fell about six points short on average, and the shortfall was concentrated in the non-COVID class, so check coverage by class if a missed class is costly. Third, if under-coverage is costly, calibrate with sites as folds (LSO-CV+) and accept sets about $26\%$ larger. That rule made the sets safer, not more efficient. Before investing in an invariance method, compare it with \erm{} and with a cheap ensemble under the same frozen protocol. On these data, neither adversaries nor augmentation moved the result.
 
-\subsection{Threats to validity}
+\subsection{Threats to Validity}
 \emph{Internal validity.} Eight sites and tiny test sets give wide intervals, so ``no significant difference'' does not show equivalence below roughly $0.03$ AUROC. The intervals in the tables are not corrected for multiplicity (Section~\ref{sec:robust} reports Holm-adjusted $p$-values). The development/confirmation split was ours and not random, tuning budgets were modest, and a better-tuned variant could still help. The CNN confirmation results were known before the pretrained family was designed. The profile estimators are proxies for scanner physics.
 
-\emph{External validity.} The study covers one modality and one binary task, and the data are public, retrospective, and assembled from publications and case reports. Absolute AUROC is therefore not clinically meaningful, and ``Other'' and ``Unknown'' mix institutions. Our environment could not reach larger or credentialed datasets and had no GPU, and we used no private data. The pretrained encoder was frozen and not fine-tuned, and we did not check whether images in this benchmark also appear in its pretraining collections.
+\emph{External validity.} The study covers one modality and one binary task, and the data are public, retrospective, and assembled from publications and case reports. Absolute AUROC is therefore not clinically meaningful, and ``Other'' and ``Unknown'' mix institutions. Our environment could not reach larger or credentialed datasets and had no graphics processor, and we used no private data. The pretrained encoder was frozen and not fine-tuned, and we did not check whether images in this benchmark also appear in its pretraining collections.
 
 \emph{Construct validity.} A site is a metadata label (institution or country) and not a measured scanner. No leave-site-out conformal rule has a finite-sample guarantee under site shift. We measured coverage marginally and by class, not conditionally on patient or site-level covariates. Larger data, more sites, and fine-tuned encoders would be needed to show whether invariance helps.
 
 \section{Conclusion}
-We asked whether making a model invariant to scanner and institution helps at unseen hospitals, and on this benchmark it did not. A class-conditional adversary and site-profile augmentation, together with seven other training methods, failed to beat \erm{} under a protocol that froze settings before the confirmation run, and the same held for a frozen pretrained encoder. The lasting results are about evaluation. Acquisition statistics leak the label, validation on seen sites is optimistic, and standard conformal sets under-cover unseen sites in both encoder families, mainly on non-COVID images. A CV+ rule with sites as folds avoids the worst shortfalls at the cost of larger sets, and simulated acquisition shifts do not reproduce the real effect. Averaging a from-scratch CNN with a pretrained model is a cheap direction worth testing on more and larger sites, since its advantage here rests largely on two tiny test sets.
+On this benchmark, making a model invariant to scanner and institution did not help at unseen hospitals, for a small convolutional network and for a frozen pretrained encoder alike. What carries over to other studies concerns evaluation and uncertainty. Validation on seen sites and standard conformal calibration both flatter the result at a new site, and a rule that treats sites as the unit of resampling is a practical safeguard at the price of larger prediction sets. Three questions remain open: whether invariance helps with more and larger sites and with fine-tuned encoders, whether a theory of exchangeability across sites can give finite-sample guarantees, and whether averaging models of different origin keeps its advantage once the tiny test sets are replaced. Answering them needs multi-site data with patient-level and scanner-level metadata, which this benchmark lacks.
 
-\section*{Data and Code Availability}
-The benchmark is rebuilt from the three public collections by \texttt{scripts/build\_covid\_cxr.py}. Code, frozen configurations, and per-run results are available at \url{https://github.com/Naveen060/scanner-institution-invariant}. Three report scripts (\texttt{final\_report.py}, \texttt{round2\_tables.py}, and \texttt{reviewer\_checks.py}) regenerate every table, figure, and headline number. The file \texttt{experiments/ITERATIONS.md} logs every experiment, including the failures. A pilot run that touched two confirmation sites was never used for any decision and is excluded.
+\appendix[Per-Site AUROC of the CNN Methods]\label{app:perfold}
+Table~\ref{tab:perfold} lists the held-out AUROC of every CNN method at each of the eight sites; Fig.~\ref{fig:methods} plots the same values.
 
-\section*{Ethics Statement}
-Only public, de-identified images were used, and no new data were collected from human participants. % TODO(authors): confirm with your institution whether an IRB exemption letter is required.
-
-\section*{Conflict of Interest}
-The authors declare no competing interests. % TODO(authors): confirm before submission.
+\begin{table*}[!t]\centering\footnotesize
+\caption{Held-Out AUROC per Site}\label{tab:perfold}
+\tabin{perfold.tex}
+\tabnote{Two-seed mean. Superscripts: d = development fold, c = confirmation fold.}
+\end{table*}
 
 \section*{Acknowledgment}
-The AI system Claude (Anthropic), used through the Claude Code environment, wrote the experiment code, ran the experiments, produced the tables and figures, and drafted all sections of this manuscript, including the Related Work and Discussion. It also revised the prose after an internal review and ran the robustness checks. The authors directed the work, edited the text for clarity and wording, and are responsible for the content. All reported numbers were generated by the released code. The open-source LanguageTool grammar checker was used on the compiled text. The chest-radiograph encoder used in the second experiment family is a model component and is cited as such.
+The artificial intelligence (AI) system Claude (Anthropic), used through the Claude Code environment, wrote the experiment code, ran the experiments, produced the tables and figures, and drafted all sections of this manuscript, including the Related Work and Discussion. It also revised the prose after an internal review and ran the robustness checks. The authors directed the work, edited the text for clarity and wording, and are responsible for the content. All reported numbers were generated by the released code. The open-source LanguageTool grammar checker was used on the compiled text. The chest-radiograph encoder used in the second experiment family is a model component and is cited as such.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
-
-\appendices
-\section{Per-site AUROC of the CNN methods}
-\begin{table}[!h]\centering\scriptsize
-\caption{Held-out AUROC per site (two-seed mean); d = development fold, c = confirmation fold.}\label{tab:perfold}
-\resizebox{\columnwidth}{!}{\tabin{perfold.tex}}
-\end{table}
 
 \end{document}
