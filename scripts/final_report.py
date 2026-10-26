@@ -12,6 +12,9 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.rcParams["pdf.fonttype"] = 42  # embed TrueType fonts (IEEE PDF eXpress rejects Type 3)
+plt.rcParams["ps.fonttype"] = 42
+plt.rcParams["font.family"] = "DejaVu Sans"
 import numpy as np
 import pandas as pd
 
@@ -225,10 +228,10 @@ def optimism():
         rho_gap_cov = float(spearmanr(gap[common], pc[common])[0])
     SUM["optimism"] = dict(rho_gap_cov=rho_gap_cov, rho_seen=rho_seen, rho_lso=rho_lso, per_fold=g.round(4).to_dict("index"), mean_signed_seen=float((d.seen_val - d.actual).mean()), mean_signed_lso=float((d.lso_est - d.actual).mean()),
                            mae_seen=float((d.seen_val - d.actual).abs().mean()), mae_lso=float((d.lso_est - d.actual).abs().mean()), n_units=int(len(d)))
-    fig, ax = plt.subplots(figsize=(6.5, 3.2)); x = np.arange(len(g)); w = .27
+    fig, ax = plt.subplots(figsize=(4.6, 2.9)); x = np.arange(len(g)); w = .27
     ax.bar(x - w, g.seen_val, w, label="seen-site validation", color="#ddaa33"); ax.bar(x, g.lso_est, w, label="leave-site-out estimate", color="#4477aa"); ax.bar(x + w, g.actual, w, label="actual held-out", color="#228833")
-    ax.set_xticks(x); ax.set_xticklabels(g.index, fontsize=8); ax.set_ylim(0.5, 1.02); ax.set_ylabel("AUROC"); ax.legend(fontsize=7, ncol=3, loc="upper center")
-    ax.set_title("Validation optimism: seen-site vs leave-site-out estimates (ERM)", fontsize=9)
+    ax.set_xticks(x); ax.set_xticklabels(g.index, fontsize=7, rotation=35, ha="right"); ax.set_ylim(0.3, 1.05); ax.set_ylabel("AUROC", fontsize=8); ax.tick_params(axis="y", labelsize=7); ax.legend(fontsize=6.5, ncol=3, loc="upper center", columnspacing=0.8, handlelength=1.2)
+    ax.set_title("Validation optimism (ERM)", fontsize=8)
     fig.tight_layout(); fig.savefig("paper/figures/fig_optimism.png", dpi=200); fig.savefig("paper/figures/fig_optimism.pdf"); plt.close(fig)
 
 

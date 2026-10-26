@@ -8,3 +8,11 @@ paper/*.out
 paper/*.blg
 paper/*.bbl
 .DS_Store
+data/covid_cxr224/images_224.npz
+paper/ieee/*.aux
+paper/ieee/*.log
+paper/ieee/*.out
+paper/ieee/*.blg
+paper/ieee/*.bbl
+runs/it16_*/
+runs/it15_all/

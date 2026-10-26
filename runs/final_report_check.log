@@ -1,0 +1,184 @@
+{
+ "task": {
+  "ERM": {
+   "auroc_all": 0.733,
+   "auroc_dev": 0.758,
+   "auroc_conf": 0.707,
+   "worst_fold": 0.565,
+   "bal_acc": 0.634,
+   "ece": 0.157,
+   "diff_vs_erm": 0.0,
+   "diff_ci": [
+    NaN,
+    NaN
+   ],
+   "p_boot_le0": NaN,
+   "folds_better": null,
+   "n_folds": 8
+  },
+  "GroupDRO": {
+   "auroc_all": 0.748,
+   "auroc_dev": 0.761,
+   "auroc_conf": 0.735,
+   "worst_fold": 0.657,
+   "bal_acc": 0.689,
+   "ece": 0.144,
+   "diff_vs_erm": 0.015,
+   "diff_ci": [
+    -0.01508849486708641,
+    0.054793648421764374
+   ],
+   "p_boot_le0": 0.189,
+   "folds_better": 4,
+   "n_folds": 8
+  },
+  "DANN": {
+   "auroc_all": 0.727,
+   "auroc_dev": 0.752,
+   "auroc_conf": 0.702,
+   "worst_fold": 0.645,
+   "bal_acc": 0.599,
+   "ece": 0.166,
+   "diff_vs_erm": -0.006,
+   "diff_ci": [
+    -0.04872953146696091,
+    0.034852709621191025
+   ],
+   "p_boot_le0": 0.603,
+   "folds_better": 4,
+   "n_folds": 8
+  },
+  "Generic aug.": {
+   "auroc_all": 0.732,
+   "auroc_dev": 0.748,
+   "auroc_conf": 0.716,
+   "worst_fold": 0.619,
+   "bal_acc": 0.663,
+   "ece": 0.15,
+   "diff_vs_erm": -0.001,
+   "diff_ci": [
+    -0.02938980422914028,
+    0.031806282699108124
+   ],
+   "p_boot_le0": 0.528,
+   "folds_better": 3,
+   "n_folds": 8
+  },
+  "Site-profile aug.": {
+   "auroc_all": 0.726,
+   "auroc_dev": 0.757,
+   "auroc_conf": 0.694,
+   "worst_fold": 0.641,
+   "bal_acc": 0.618,
+   "ece": 0.174,
+   "diff_vs_erm": -0.007,
+   "diff_ci": [
+    -0.0601729154586792,
+    0.037772439420223236
+   ],
+   "p_boot_le0": 0.574,
+   "folds_better": 6,
+   "n_folds": 8
+  },
+  "Profile adversary (PAI)": {
+   "auroc_all": 0.73,
+   "auroc_dev": 0.753,
+   "auroc_conf": 0.708,
+   "worst_fold": 0.551,
+   "bal_acc": 0.615,
+   "ece": 0.154,
+   "diff_vs_erm": -0.002,
+   "diff_ci": [
+    -0.01972513273358345,
+    0.014367874711751938
+   ],
+   "p_boot_le0": 0.593,
+   "folds_better": 4,
+   "n_folds": 8
+  },
+  "SIDL-cc": {
+   "auroc_all": 0.711,
+   "auroc_dev": 0.722,
+   "auroc_conf": 0.699,
+   "worst_fold": 0.635,
+   "bal_acc": 0.612,
+   "ece": 0.178,
+   "diff_vs_erm": -0.022,
+   "diff_ci": [
+    -0.06935791671276093,
+    0.02991565316915512
+   ],
+   "p_boot_le0": 0.807,
+   "folds_better": 3,
+   "n_folds": 8
+  },
+  "SIDL-phys": {
+   "auroc_all": 0.744,
+   "auroc_dev": 0.756,
+   "auroc_conf": 0.732,
+   "worst_fold": 0.65,
+   "bal_acc": 0.656,
+   "ece": 0.192,
+   "diff_vs_erm": 0.011,
+   "diff_ci": [
+    -0.016172289848327637,
+    0.049520138651132584
+   ],
+   "p_boot_le0": 0.269,
+   "folds_better": 3,
+   "n_folds": 8
+  },
+  "SIDL-full": {
+   "auroc_all": 0.701,
+   "auroc_dev": 0.738,
+   "auroc_conf": 0.665,
+   "worst_fold": 0.415,
+   "bal_acc": 0.59,
+   "ece": 0.175,
+   "diff_vs_erm": -0.031,
+   "diff_ci": [
+    -0.08500254899263382,
+    0.016049856320023537
+   ],
+   "p_boot_le0": 0.898,
+   "folds_better": 3,
+   "n_folds": 8
+  }
+ },
+ "optimism": {
+  "rho_gap_cov": -0.4523809523809524,
+  "rho_seen": -0.30952380952380953,
+  "rho_lso": -0.04761904761904763,
+  "per_fold": {
+   "Actualmed": {
+    "seed": 0.5,
+    "seen_val": 0.833,
+    "lso_est": 0.7429,
+    "actual": 0.7445
+   },
+   "Italy": {
+    "seed": 0.5,
+    "seen_val": 0.8684,
+    "lso_est": 0.7318,
+    "actual": 0.7605
+   },
+   "China": {
+    "seed": 0.5,
+    "seen_val": 0.877,
+    "lso_est": 0.7467,
+    "actual": 0.8078
+   },
+   "Spain": {
+    "seed": 0.5,
+    "seen_val": 0.8443,
+    "lso_est": 0.7489,
+    "actual": 0.72
+   },
+   "UK": {
+    "seed": 0.5,
+    "seen_val": 0.8097,
+    "lso_est": 0.723,
+    "actual": 0.8589
+   },
+   "Australia": {
+  

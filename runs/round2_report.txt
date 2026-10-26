@@ -1,0 +1,37 @@
+model                        Actual  Italy  China  Spain     UK Austra  Other Unknow   dev   conf   all  worst
+CNN ERM                       0.767  0.756  0.794  0.702  0.814  0.595  0.628  0.759  0.755 0.699 0.727 0.595
+Pretrained ERM                0.619  0.684  0.906  0.749  0.646  0.893  0.652  0.841  0.739 0.758 0.749 0.619
+CNN 5-model ens               0.786  0.766  0.800  0.735  0.837  0.617  0.628  0.780  0.772 0.716 0.744 0.617
+Pretrained 5-model ens        0.646  0.686  0.914  0.754  0.655  0.910  0.659  0.860  0.750 0.771 0.760 0.646
+CNN + pretrained (5+5 ens)    0.725  0.751  0.902  0.778  0.742  0.836  0.671  0.831  0.789 0.770 0.780 0.671
+
+primary / secondary paired comparisons (hierarchical bootstrap, 2000 reps):
+  [A] dev  CNN + pretrained (5+5 ens) - CNN 5-model ens: +0.017 [-0.050, +0.096]
+  [A] conf CNN + pretrained (5+5 ens) - CNN 5-model ens: +0.055 [-0.062, +0.181]
+  [A] all  CNN + pretrained (5+5 ens) - CNN 5-model ens: +0.036 [-0.031, +0.110]
+  [B] dev  CNN + pretrained (5+5 ens) - CNN ERM: +0.034 [-0.034, +0.111]
+  [B] conf CNN + pretrained (5+5 ens) - CNN ERM: +0.071 [-0.043, +0.194]
+  [B] all  CNN + pretrained (5+5 ens) - CNN ERM: +0.053 [-0.013, +0.129]
+  [-] dev  CNN + pretrained (5+5 ens) - Pretrained 5-model ens: +0.039 [-0.005, +0.080]
+  [-] conf CNN + pretrained (5+5 ens) - Pretrained 5-model ens: -0.001 [-0.069, +0.066]
+  [-] all  CNN + pretrained (5+5 ens) - Pretrained 5-model ens: +0.019 [-0.023, +0.058]
+  [-] dev  Pretrained ERM - CNN ERM: -0.015 [-0.122, +0.105]
+  [-] conf Pretrained ERM - CNN ERM: +0.059 [-0.114, +0.245]
+  [-] all  Pretrained ERM - CNN ERM: +0.022 [-0.079, +0.133]
+  [-] dev  CNN 5-model ens - CNN ERM: +0.017 [+0.002, +0.032]
+  [-] conf CNN 5-model ens - CNN ERM: +0.016 [+0.000, +0.034]
+  [-] all  CNN 5-model ens - CNN ERM: +0.017 [+0.006, +0.030]
+  [-] dev  Pretrained 5-model ens - CNN 5-model ens: -0.022 [-0.127, +0.097]
+  [-] conf Pretrained 5-model ens - CNN 5-model ens: +0.056 [-0.122, +0.244]
+  [-] all  Pretrained 5-model ens - CNN 5-model ens: +0.017 [-0.087, +0.128]
+
+feature-head methods vs pretrained ERM (seed-averaged single heads):
+  erm         dev 0.739 conf 0.758 all 0.749  diff vs erm (all) +0.000 [+0.000, +0.000]
+  erm_p       dev 0.738 conf 0.747 all 0.742  diff vs erm (all) -0.006 [-0.017, +0.005]
+  groupdro    dev 0.760 conf 0.774 all 0.767  diff vs erm (all) +0.018 [-0.000, +0.039]
+  dann        dev 0.736 conf 0.759 all 0.747  diff vs erm (all) -0.002 [-0.019, +0.020]
+  cdann       dev 0.739 conf 0.755 all 0.747  diff vs erm (all) -0.001 [-0.019, +0.017]
+  cdann_p     dev 0.706 conf 0.742 all 0.724  diff vs erm (all) -0.025 [-0.062, +0.005]
+  coral       dev 0.740 conf 0.755 all 0.748  diff vs erm (all) -0.001 [-0.012, +0.010]
+  cc_full     dev 0.741 conf 0.743 all 0.742  diff vs erm (all) -0.006 [-0.026, +0.011]
+  sitecenter  dev 0.715 conf 0.703 all 0.709  diff vs erm (all) -0.040 [-0.076, -0.006]

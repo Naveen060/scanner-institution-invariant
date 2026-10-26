@@ -187,3 +187,87 @@ LSO-split 0.923/0.867/1.64; LSO-CV+ 0.933/0.867/1.77; LSO-worst 0.983/0.961/1.88
   Neither estimator ranks held-out sites (Spearman across 8 folds: seen-site -0.31, LSO -0.05); fold-level AUROC varies 0.56-0.86 while the LSO estimate sits at 0.72-0.75 for all folds.
   Spearman between per-fold optimism gap and pooled-conformal coverage across the 8 folds: -0.45 (n=8; same sign as the mechanism, not significant).
 - Final claims supported by the evidence are listed in the paper abstract; unsupported claims (any accuracy gain from invariance/augmentation; label-shift-aware advantage; profile-weighted or label-shift conformal; simulation reproducing real under-coverage) are reported as negative results.
+
+# Round 2 (journal-readiness): does a second encoder family change the conclusions?
+Motivation: a reviewer's first question about iterations 1-10 is whether "no invariance method beats ERM" and "pooled conformal under-covers unseen sites" are properties of a small from-scratch CNN. Round 2 tests this with a frozen pretrained chest X-ray encoder.
+Same rules as round 1: development folds (Actualmed, Italy, China, Spain) guide every decision; confirmation folds (UK, Australia, Other, Unknown) are run once with frozen configs. Negative results are reported as negative.
+Encoder: torchxrayvision DenseNet121 "all" weights (trained on NIH, PadChest, CheXpert, MIMIC-CXR, Google, OpenI, RSNA; no COVID-19 labels), frozen, 224x224 input, 1024-d penultimate embedding (scripts/extract_xrv_features.py).
+Not checked: whether benchmark images also appear in those pretraining sets.
+
+## Iteration 11 - pretrained frozen encoder + small head (ERM), development folds, 5 seeds (scripts/run_feat_loso.py, sidl/featheads.py)
+Held-out AUROC (mean of 5 seeds): Actualmed 0.619, Italy 0.684, China 0.906, Spain 0.749; mean 0.739 (seed-to-seed sd of the 4-fold mean 0.038). Linear head: 0.720.
+From-scratch CNN ERM on the same folds (2 seeds): 0.745 / 0.760 / 0.808 / 0.720; mean 0.758.
+- NEGATIVE: the pretrained encoder is not better overall. It is clearly better on China (+0.10) and Spain (+0.03) and worse on Actualmed (-0.13) and Italy (-0.08).
+- Head hyperparameter grid (epochs 15/60, projection 64, dropout 0.5, weight decay 0.1, lr 3e-4, lr 3e-4 + 60 epochs): mean dev AUROC 0.737-0.743 for all seven settings. Tuning the head does not change the conclusion; default head kept.
+
+## Iteration 12 - invariance heads on the pretrained features, development folds, 5 seeds
+Same methods as round 1, implemented on the embedding (ERM, prior reweighting, GroupDRO, DANN, class-conditional adversary, +prior, CORAL, class-conditional recipe without augmentation, transductive per-site feature centring). Three settings: adversary weight 0.5 (default), 0.1, and CORAL weight 1.0 + adversary 0.1.
+Mean dev AUROC (ERM 0.739): GroupDRO 0.760 (+0.021), class-conditional recipe 0.741, CORAL 0.740, class-conditional adversary 0.739, prior reweighting 0.738, DANN 0.736, site centring 0.715 (-0.024, uses target features), class-conditional adversary + prior 0.706 (-0.033); weaker-adversary and stronger-CORAL settings 0.709-0.737 (all below ERM).
+- NEGATIVE, replicates round 1: no invariance method beats ERM. GroupDRO is again the largest positive difference (round 1: +0.015 on all folds), paired bootstrap +0.021 [-0.007, +0.051] vs pretrained ERM.
+- Sensitivity to the adversary weight (0.1 vs 0.5) and to CORAL weight changes means by up to 0.03, comparable to the seed sd; there is no setting that helps.
+- Transductive site centring (needs unlabeled target images) does best on Actualmed (0.664 vs 0.619) but loses 0.09 on China; mean is worse than ERM.
+
+## Iteration 13 - does combining the two encoder families help? (development folds, 5 seeds each; scripts/feat_compare.py)
+Added 3 seeds of the unchanged from-scratch ERM (runs/it13.sh) so both families have 5 seeds on the development folds. Ensemble = mean predicted probability.
+Held-out AUROC, dev folds (Actualmed / Italy / China / Spain; mean):
+| model | Actualmed | Italy | China | Spain | mean |
+|---|---|---|---|---|---|
+| CNN ERM, single (5-seed avg) | 0.767 | 0.756 | 0.794 | 0.702 | 0.755 |
+| pretrained ERM, single (5-seed avg) | 0.619 | 0.684 | 0.906 | 0.749 | 0.739 |
+| CNN 5-model ensemble | 0.786 | 0.766 | 0.800 | 0.735 | 0.772 |
+| pretrained 5-model ensemble | 0.646 | 0.686 | 0.914 | 0.754 | 0.750 |
+| CNN + pretrained (5+5 ensemble) | 0.725 | 0.751 | 0.902 | 0.778 | 0.789 |
+- Paired hierarchical bootstrap (folds, then images by class): cross-family ensemble vs CNN single +0.025 [-0.042,+0.099] (matched seeds); vs CNN 5-model ensemble +0.017 [-0.050,+0.096]; vs pretrained 5-model ensemble +0.039 [-0.005,+0.080].
+- Averaging seeds within the CNN family already helps: +0.017 [+0.002,+0.032].
+- DIRECTION POSITIVE, NOT SIGNIFICANT on 4 development folds. The ensemble is best or near-best on 3 of 4 folds but loses to the CNN on Actualmed (0.725 vs 0.767 single).
+- Caution from this iteration: two-seed averages are unreliable (pretrained ERM seeds 0-1 averaged 0.766, seeds 0-4 averaged 0.739). All comparisons from here use 5 seeds.
+- A GroupDRO pretrained head added to the ensemble gives 0.796 (+0.007 [-0.010,+0.024]); not carried forward (GroupDRO is a dev-fold pick among nine comparisons).
+
+## Iteration 14 - FROZEN before any confirmation fold was run for the pretrained family
+- Pre-specified primary comparisons (confirmation folds UK, Australia, Other, Unknown, plus all 8 folds): (A) CNN + pretrained ERM ensemble (5+5, mean probability) vs the CNN 5-model ensemble; (B) same ensemble vs single CNN ERM (5-seed average).
+- Pre-specified secondary: the nine feature-head methods at the default settings of iteration 12 (adversary weight 0.5, CORAL weight 0.1; no per-fold selection) vs pretrained ERM, to check whether the "no invariance gain" result replicates on the confirmation folds.
+- Pretrained ERM uses the iteration-11 default head (the grid showed no improvement). From-scratch ERM gets seeds 2-4 on the confirmation folds with the config frozen since iteration 8 (runs/it14.sh); seeds 0-1 were already run in iteration 9.
+- Run once. Whatever comes out is reported.
+
+## Iteration 14 - RESULT of the frozen confirmation run (UK, Australia, Other, Unknown; 5 seeds per model; run once; scripts/round2_report.py -> runs/round2.json)
+Held-out AUROC, mean over sites (dev 4 / conf 4 / all 8) and worst site:
+| model | dev | conf | all | worst |
+|---|---|---|---|---|
+| CNN ERM (5-seed avg) | 0.755 | 0.699 | 0.727 | 0.595 (Australia) |
+| pretrained ERM (5-seed avg) | 0.739 | 0.758 | 0.749 | 0.619 (Actualmed) |
+| CNN 5-model ensemble | 0.772 | 0.716 | 0.744 | 0.617 |
+| pretrained 5-model ensemble | 0.750 | 0.771 | 0.760 | 0.646 |
+| CNN + pretrained (5+5 ensemble) | 0.789 | 0.770 | 0.780 | 0.671 (Other) |
+- Pre-specified (A): ensemble - CNN 5-model ensemble: dev +0.017 [-0.050,+0.096]; conf +0.055 [-0.062,+0.181]; all +0.036 [-0.031,+0.110].
+- Pre-specified (B): ensemble - single CNN ERM: dev +0.034 [-0.034,+0.111]; conf +0.071 [-0.043,+0.194]; all +0.053 [-0.013,+0.129].
+- RESULT: POSITIVE IN DIRECTION ON BOTH FOLD SETS (same sign on dev and confirmation), best mean and best worst-site AUROC, but NOT significant (all hierarchical 95% intervals include zero). Reported as suggestive.
+- The two families fail on different sites: the CNN is weak on Australia (0.595) and China-like small sites, the pretrained head on Actualmed (0.619) and UK (0.646); the ensemble is never the worst on those and has the best worst-site value. Per-site, the ensemble beats the single CNN on 5/8 sites.
+- On the confirmation folds the pretrained model alone (0.771 as a 5-model ensemble) is as good as the ensemble (-0.001 [-0.069,+0.066] for ensemble minus pretrained ensemble); on the development folds the sign was the other way. The data do not separate "ensemble" from "pretrained is better".
+- Seed averaging alone helps the CNN: 5-model ensemble minus single, +0.017 [+0.006,+0.030] over 8 sites.
+- Secondary (nine feature heads at the frozen defaults vs pretrained ERM, all 8 sites): GroupDRO +0.018 [-0.000,+0.039] (dev +0.021, conf +0.016); prior reweighting -0.006; DANN -0.002; class-conditional adversary -0.001; CORAL -0.001; class-conditional recipe -0.006 [-0.026,+0.011]; adversary+prior -0.025 [-0.062,+0.005]; transductive site centring -0.040 [-0.076,-0.006] (significantly worse).
+  REPLICATES iteration 9: no invariance method helps; GroupDRO is again the best single method, with the same sign in two encoder families and two fold sets, effect ~0.02, interval touching zero, nine comparisons uncorrected. Treated as suggestive only.
+
+## Iteration 15 - conformal calibration on the pretrained embeddings (ERM head; 8 sites x 3 seeds; 8 LSO inner models per site-seed on the 9 source sites; scripts/run_feat_lso_conformal.py)
+alpha = 0.1 (target 0.90), all 8 sites, mean coverage / min / sites >5pp short / mean size:
+pooled 0.824 / 0.737 / 6 of 8 / 1.32; site-balanced 0.812 / 0.690 / 6 / 1.30; worst-site 0.879 / 0.782 / 2 / 1.51; LSO-split 0.895 / 0.820 / 2 / 1.57; LSO-CV+ 0.937 / 0.866 / 0 / 1.69; LSO-worst 0.961 / 0.899 / 0 / 1.83.
+Set size at matched 90% coverage (alpha grid): 1.53-1.60 for every calibration (pooled 1.575, LSO-CV+ 1.526).
+- REPLICATES (positive for the conclusions, negative for any efficiency claim): with a different encoder family, seen-site calibration still under-covers unseen sites (6/8 sites), LSO-CV+ removes the large shortfalls (0/8) at ~28% larger sets, and all calibrations lie on one coverage-size curve.
+- The CNN pipeline reproduces the paper numbers exactly when run through the same code on seeds 0-1 (pooled 0.836, LSO-CV+ 0.942, sizes 1.389 and 1.747), which checks the analysis path.
+
+## Iteration 16 - conformal calibration for the CNN + pretrained ENSEMBLE (seeds 0-1; scripts/make_ensemble_runs.py, analyze_lso_conformal.py)
+Ensemble probabilities average the CNN and the pretrained head (same seed), for the full model, the LSO inner models and the held-out predictions. Calibration images and held-out images are identical across the families (asserted).
+all 8 sites, alpha = 0.1: pooled 0.836 / 0.773 / 5 of 8 / 1.29; site-balanced 0.821 / 0.733 / 6 / 1.27; worst-site 0.889 / 0.773 / 2 / 1.48; LSO-split 0.904 / 0.781 / 2 / 1.51; LSO-CV+ 0.936 / 0.870 / 0 / 1.64; LSO-worst 0.973 / 0.914 / 0 / 1.79.
+- A better model does not remove the coverage gap: the pooled shortfall (0.836 vs 0.90) is the same as for the single CNN (0.836).
+- Matched-coverage set size (alpha grid): ensemble 1.48-1.52 vs CNN 1.57-1.60 vs pretrained 1.51-1.58. Per-site paired difference at matched 90% coverage, ensemble minus CNN: pooled -0.042 [-0.123,+0.042], LSO-CV+ -0.059 [-0.117,+0.005] (6 of 8 sites smaller). Direction consistent with the higher AUROC; intervals include zero.
+
+## Iteration 17 - descriptive checks on the pretrained embeddings (scripts/feat_diagnostics.py -> runs/feat_diagnostics.json)
+- Site is decodable from the frozen embedding: patient-grouped 5-fold logistic regression predicts the source among 10 with accuracy 0.473 (majority class 0.224). The encoder does not remove site information.
+- Seen-site validation optimism of the pretrained ERM head: validation AUROC 0.863 vs held-out 0.749 = +0.115 (MAE 0.145, 40 site-seed units); CNN +0.118. Replicates.
+
+## Iteration 18 - consolidation for the IEEE manuscript (paper/ieee/main.tex; scripts/round2_tables.py)
+- Tables, figure and number macros for round 2 are generated from runs/ by scripts/round2_report.py (comparisons) and scripts/round2_tables.py (tables, fig_round2, paper/numbers_r2.tex). Hand-typed numbers in the manuscript are limited to ones already in this log (checked against it).
+- The paper's conformal comparison across families uses seeds 0-1 for all three families so they are matched (CNN 0.836/0.942, pretrained 0.834/0.937, ensemble 0.836/0.936 for pooled/LSO-CV+; sites >5pp short 4/5/5 for pooled). Iteration 15 above used three seeds for the pretrained head (pooled 0.824, 6 of 8 short); the two-seed numbers are the ones in the paper. Matched-coverage set sizes in the paper table (CNN 1.57-1.60, pretrained 1.51-1.57, ensemble 1.48-1.52) use a monotone-coverage interpolation; iteration 15/16 text above gives the unsmoothed ranges (differences of at most 0.01).
+- Per-site paired set size at matched 90% coverage, ensemble minus CNN (scripts/round2_tables.py, seeds 0-1): LSO-CV+ -0.059 [-0.120, +0.002], smaller at 6 of 8 sites; pooled -0.042 [-0.123, +0.042], smaller at 5 of 8.
+- Housekeeping found while consolidating: the three extra CNN ERM seeds had been written into the folders the single-column paper reads (runs/it1, runs/conf_erm), which would have changed its ERM numbers; they were moved to runs/cnn_extra and the original report was re-run: all tables and number macros unchanged.
+- Figures regenerated with embedded TrueType fonts (no Type 3) and a column-sized optimism figure; numbers unchanged.
+- Not done (environment limits): a second public multi-site dataset (hosts blocked), fine-tuning the encoder, checking overlap between the benchmark and the encoder's pretraining images.

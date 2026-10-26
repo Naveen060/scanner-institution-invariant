@@ -1,0 +1,12 @@
+{"holdout": "UK", "method": "erm", "seed": 2, "auroc": 0.8331332533013205, "acc": 0.5757575757575758, "sec": 32.0}
+{"holdout": "UK", "method": "erm", "seed": 3, "auroc": 0.8523409363745498, "acc": 0.803030303030303, "sec": 29.5}
+{"holdout": "UK", "method": "erm", "seed": 4, "auroc": 0.6686674669867947, "acc": 0.6060606060606061, "sec": 31.0}
+{"holdout": "Australia", "method": "erm", "seed": 2, "auroc": 0.5740740740740741, "acc": 0.4, "sec": 30.7}
+{"holdout": "Australia", "method": "erm", "seed": 3, "auroc": 0.6018518518518519, "acc": 0.38333333333333336, "sec": 31.3}
+{"holdout": "Australia", "method": "erm", "seed": 4, "auroc": 0.6697530864197531, "acc": 0.45, "sec": 31.7}
+{"holdout": "Other", "method": "erm", "seed": 2, "auroc": 0.6143683702989392, "acc": 0.5603864734299517, "sec": 26.2}
+{"holdout": "Other", "method": "erm", "seed": 3, "auroc": 0.6101253616200579, "acc": 0.5845410628019324, "sec": 25.4}
+{"holdout": "Other", "method": "erm", "seed": 4, "auroc": 0.6568948891031824, "acc": 0.6570048309178744, "sec": 26.2}
+{"holdout": "Unknown", "method": "erm", "seed": 2, "auroc": 0.7352472089314195, "acc": 0.7307692307692307, "sec": 31.0}
+{"holdout": "Unknown", "method": "erm", "seed": 3, "auroc": 0.810207336523126, "acc": 0.7692307692307693, "sec": 31.1}
+{"holdout": "Unknown", "method": "erm", "seed": 4, "auroc": 0.7001594896331739, "acc": 0.7115384615384616, "sec": 30.2}

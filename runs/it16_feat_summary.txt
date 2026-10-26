@@ -1,0 +1,37 @@
+== alpha=0.1 (target coverage 0.90); folds=['Actualmed', 'Australia', 'China', 'Italy', 'Other', 'Spain', 'UK', 'Unknown'] ==
+                cov_mean  cov_min  gap_abs  n_under   size
+mode                                                      
+lso_split          0.894    0.812    0.040        1  1.538
+worst_site         0.890    0.795    0.044        1  1.517
+lso_split_bal      0.879    0.790    0.046        2  1.468
+lso_cvplus_bal     0.919    0.808    0.052        1  1.602
+lso_cvplus         0.937    0.862    0.052        0  1.682
+lso_worst          0.960    0.896    0.061        0  1.817
+pooled             0.834    0.766    0.080        5  1.323
+site_balanced      0.828    0.750    0.088        6  1.322
+
+per-fold coverage:
+ holdout         Actualmed  Australia  China  ...  Spain     UK  Unknown
+mode                                         ...                       
+lso_cvplus          0.878      0.917  0.973  ...  0.973  0.955    0.981
+lso_cvplus_bal      0.808      0.900  0.973  ...  0.946  0.947    0.981
+lso_split           0.905      0.883  0.938  ...  0.866  0.856    0.962
+lso_split_bal       0.878      0.858  0.938  ...  0.866  0.841    0.962
+lso_worst           0.997      0.942  0.973  ...  0.982  0.932    0.990
+pooled              0.805      0.783  0.911  ...  0.866  0.788    0.942
+site_balanced       0.792      0.750  0.902  ...  0.839  0.780    0.962
+worst_site          0.873      0.858  0.929  ...  0.920  0.917    0.971
+
+[8 rows x 8 columns]
+
+Across alpha grid [0.04, 0.06, 0.08, 0.1, 0.13, 0.16, 0.2, 0.25, 0.3] 
+                 cov_calib_err  size_at_cov90  frac_under
+mode                                                    
+worst_site              0.010          1.567       0.194
+lso_split               0.011          1.565       0.153
+lso_split_bal           0.015          1.548       0.236
+lso_cvplus_bal          0.015          1.535       0.111
+lso_cvplus              0.042          1.512       0.069
+pooled                  0.057          1.551       0.486
+site_balanced           0.057          1.578       0.542
+lso_worst               0.072          1.567       0.000

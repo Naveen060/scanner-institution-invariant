@@ -86,7 +86,26 @@ def test_conditional_adversary_shapes_and_coral():
     print("conditional adversary OK")
 
 
+def test_feature_heads():
+    from sidl.featheads import FEAT_METHODS, predict, prior_weights, train_head
+    rng = np.random.RandomState(0)
+    n, d = 120, 16
+    s = rng.randint(0, 3, n); y = (rng.rand(n) < np.array([0.2, 0.5, 0.8])[s]).astype(int)
+    X = rng.randn(n, d).astype(np.float32); X[:, 0] += 1.5 * y
+    w = prior_weights(y, s, 3).numpy()  # reweighting equalizes the label prior across sites
+    prev = np.array([(w[k, 1] * (y[s == k] == 1).sum()) / (w[k, 1] * (y[s == k] == 1).sum() + w[k, 0] * (y[s == k] == 0).sum()) for k in range(3)])
+    assert prev.std() < 0.08, prev
+    for name, flags in FEAT_METHODS.items():
+        if flags.get("center"):
+            continue
+        m, best = train_head(X[:90], y[:90], s[:90], X[90:], y[90:], 3, flags, 0, epochs=3)
+        p = predict(m, X[90:])
+        assert p.shape == (30, 2) and np.allclose(p.sum(1), 1, atol=1e-5), name
+    print("feature heads OK")
+
+
 if __name__ == "__main__":
+    test_feature_heads()
     test_conformal_exchangeable()
     test_conformal_site_shift_worst_site_more_conservative()
     test_site_profiles_and_translation()
