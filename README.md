@@ -27,6 +27,11 @@ Frozen TorchXRayVision DenseNet-121 embeddings (224x224) with small trainable he
 9. **Two earlier hints were weaker than they looked.** Without the two tiny test sets (China: 5 negatives, Australia: 6 positives) the CNN GroupDRO gain is 0.000 [-0.026, +0.024] and the ensemble's lead over a single CNN falls from +0.053 to +0.012 [-0.041, +0.065]. Pretrained-head GroupDRO is +0.025 [+0.005, +0.049] on those six sites (a post hoc subset).
 10. **Nothing survives multiple-comparison correction.** Eleven second-study comparisons: smallest raw p 0.028 (site centering, worse than ERM), GroupDRO 0.052; smallest Holm-adjusted p 0.31.
 
+### Round 4: final audit (iterations 22-23)
+
+11. **Semisynthetic benchmark corrected.** A section-by-section audit found that the virtual sites could contain the same radiograph more than once (14-23% of images). All semisynthetic experiments were repeated without reuse (`runs/it22.sh`; results in `runs/it3_nr`, `it4_nr_*`, `it7_nr*`; the superseded runs stay in `runs/it3`, `it4_*`, `it7*`). Changes: prior reweighting alone is +0.030 [+0.004, +0.065] at the largest prior spread (six units; it was reported as neutral), at weights of 0.1 or below the adversaries are within about 0.02 of ERM at that spread, and the earlier "LSO-split under-covers at the highest severity" result is gone (pooled coverage on the simulation is 0.898-0.912 against 0.836 on real sites). The conclusion that simulated shift does not reproduce the real under-coverage stands.
+12. **Sharpness check.** The site-profile statistics use a sharpness measure that is not noise-corrected (the code default). Rerunning site-profile augmentation and PAI with the corrected statistic changes nothing material (site-profile augmentation -0.007 -> +0.011 against ERM, interval includes zero; PAI -0.006; label-leak AUROC 0.662 vs 0.660). Boolean `--set` overrides were parsed wrongly in three run scripts; fixed, and no earlier result used one.
+
 The IEEE manuscript was rewritten in plainer prose (research questions up front, SIDL defined, number-heavy paragraphs moved into tables, practical-guidance and threats-to-validity subsections); `scripts/text_checks.py` runs LanguageTool and a readability report on the compiled PDF. Grammarly, QuillBot and iThenticate could not be used here; the similarity-risk advice is in `paper/ieee/SUBMISSION_CHECKLIST.md`.
 
 ## Layout
@@ -39,6 +44,7 @@ The IEEE manuscript was rewritten in plainer prose (research questions up front,
 | `scripts/run_lso_conformal.py`, `analyze_lso_conformal.py` | leave-site-out inner models and conformal analysis |
 | `scripts/run_synth.py`, `run_synth_lso.py`, `analyze_synth.py` | semi-synthetic label-shift and acquisition-shift experiments |
 | `scripts/diagnostics.py`, `shortcut_removal.py`, `shortcut_reliance.py` | label-free diagnostics |
+| `scripts/duplicate_check.py`, `scripts/compensate_check.py` | near-duplicate check (`runs/duplicate_check.json`); noise-corrected sharpness sensitivity (`runs/compensate_check.json`) |
 | `scripts/ensemble_check.py` | site-bagged ensemble check |
 | `scripts/final_report.py` | regenerates every table, figure and number macro in the single-column paper |
 | `scripts/extract_xrv_features.py`, `sidl/featheads.py`, `scripts/run_feat_loso.py`, `scripts/run_feat_lso_conformal.py` | round 2: frozen pretrained embeddings, feature-space training heads, leave-one-site-out and leave-site-out conformal runners |

@@ -46,7 +46,7 @@ def main():
     extra = {}
     for kv in a.set:
         k, v = kv.split("=")
-        extra[k] = type(getattr(TrainConfig, k))(v) if not isinstance(getattr(TrainConfig, k), bool) else v == "True"
+        extra[k] = type(getattr(TrainConfig, k))(v) if not isinstance(getattr(TrainConfig, k), bool) else v.lower() in ("1", "true", "yes")
     for held in a.holdouts:
         for seed in a.seeds:
             sp = leave_one_site_out(df, held, seed=seed)

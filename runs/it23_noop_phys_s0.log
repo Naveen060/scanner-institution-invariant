@@ -1,0 +1,8 @@
+{"holdout": "Actualmed", "method": "phys_aug", "seed": 0, "auroc": 0.7359489546565301, "acc": 0.5027027027027027, "sec": 52.9}
+{"holdout": "Italy", "method": "phys_aug", "seed": 0, "auroc": 0.797, "acc": 0.7333333333333333, "sec": 38.2}
+{"holdout": "China", "method": "phys_aug", "seed": 0, "auroc": 0.7529411764705882, "acc": 0.7678571428571429, "sec": 54.6}
+{"holdout": "Spain", "method": "phys_aug", "seed": 0, "auroc": 0.7573099415204678, "acc": 0.7142857142857143, "sec": 42.7}
+{"holdout": "UK", "method": "phys_aug", "seed": 0, "auroc": 0.8631452581032413, "acc": 0.7878787878787878, "sec": 52.9}
+{"holdout": "Australia", "method": "phys_aug", "seed": 0, "auroc": 0.7191358024691358, "acc": 0.15, "sec": 31.7}
+{"holdout": "Other", "method": "phys_aug", "seed": 0, "auroc": 0.6437801350048218, "acc": 0.6183574879227053, "sec": 28.7}
+{"holdout": "Unknown", "method": "phys_aug", "seed": 0, "auroc": 0.7735247208931421, "acc": 0.75, "sec": 31.4}

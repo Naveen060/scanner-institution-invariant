@@ -104,10 +104,28 @@ def test_feature_heads():
     print("feature heads OK")
 
 
+def test_synth_strict_no_reuse():
+    """strict=True: every source image is used at most once across virtual sites, and an exhausted pool raises."""
+    from sidl.synth import make_virtual_sites
+    rng = np.random.RandomState(0)
+    X = rng.randint(0, 255, (1000, 32, 32), dtype=np.uint8); y = (np.arange(1000) % 2).astype(int)
+    Xv, df, params, priors = make_virtual_sites(X, y, 5, 0.4, 140, 0, size=32, strict=True)
+    src = df.patient_id.str.split("_").str[1]
+    assert src.nunique() == len(src) == 700, (src.nunique(), len(src))
+    try:
+        make_virtual_sites(X, y, 5, 0.4, 400, 0, size=32, strict=True)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected ValueError when the class pool is exhausted")
+    print("synthetic strict mode OK")
+
+
 if __name__ == "__main__":
     test_feature_heads()
     test_conformal_exchangeable()
     test_conformal_site_shift_worst_site_more_conservative()
     test_site_profiles_and_translation()
     test_conditional_adversary_shapes_and_coral()
+    test_synth_strict_no_reuse()
     print("ALL UNIT TESTS PASSED")

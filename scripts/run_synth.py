@@ -47,7 +47,7 @@ def main():
     y0 = df0.label.values
     extra = {}
     for kv in a.set:
-        k, v = kv.split("="); extra[k] = type(getattr(TrainConfig, k))(v)
+        k, v = kv.split("="); extra[k] = (v.lower() in ("1", "true", "yes")) if isinstance(getattr(TrainConfig, k), bool) else type(getattr(TrainConfig, k))(v)
     for spread in a.spreads:
         for seed in a.seeds:
             Xv, df, params, priors = make_virtual_sites(X, y0, a.K, spread, a.per_site, seed, strict=a.strict)

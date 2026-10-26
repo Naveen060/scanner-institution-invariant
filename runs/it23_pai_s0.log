@@ -1,0 +1,8 @@
+{"holdout": "Actualmed", "method": "pai", "seed": 0, "auroc": 0.6910127613358675, "acc": 0.5135135135135135, "sec": 29.1}
+{"holdout": "Italy", "method": "pai", "seed": 0, "auroc": 0.812, "acc": 0.475, "sec": 30.4}
+{"holdout": "China", "method": "pai", "seed": 0, "auroc": 0.8470588235294118, "acc": 0.7857142857142857, "sec": 34.4}
+{"holdout": "Spain", "method": "pai", "seed": 0, "auroc": 0.6827485380116959, "acc": 0.7321428571428571, "sec": 34.1}
+{"holdout": "UK", "method": "pai", "seed": 0, "auroc": 0.8451380552220888, "acc": 0.803030303030303, "sec": 34.7}
+{"holdout": "Australia", "method": "pai", "seed": 0, "auroc": 0.6111111111111112, "acc": 0.7333333333333333, "sec": 35.5}
+{"holdout": "Other", "method": "pai", "seed": 0, "auroc": 0.6441658630665381, "acc": 0.6183574879227053, "sec": 29.0}
+{"holdout": "Unknown", "method": "pai", "seed": 0, "auroc": 0.7384370015948963, "acc": 0.7115384615384616, "sec": 37.0}

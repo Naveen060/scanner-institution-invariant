@@ -3,3 +3,10 @@
 {"spread": 0.0, "holdout": "V2", "method": "dann", "seed": 1, "auroc": 0.7389795918367347, "sec": 15.9}
 {"spread": 0.0, "holdout": "V2", "method": "cdann_p", "seed": 1, "auroc": 0.756734693877551, "sec": 15.5}
 {"spread": 0.0, "holdout": "V4", "method": "dann", "seed": 1, "auroc": 0.7095918367346938, "sec": 16.5}
+{"spread": 0.0, "holdout": "V4", "method": "cdann_p", "seed": 1, "auroc": 0.7128571428571429, "sec": 16.5}
+{"spread": 0.4, "holdout": "V0", "method": "dann", "seed": 1, "auroc": 0.7450980392156862, "sec": 16.6}
+{"spread": 0.4, "holdout": "V0", "method": "cdann_p", "seed": 1, "auroc": 0.735533237685318, "sec": 15.2}
+{"spread": 0.4, "holdout": "V2", "method": "dann", "seed": 1, "auroc": 0.7555102040816326, "sec": 15.1}
+{"spread": 0.4, "holdout": "V2", "method": "cdann_p", "seed": 1, "auroc": 0.7738775510204081, "sec": 15.6}
+{"spread": 0.4, "holdout": "V4", "method": "dann", "seed": 1, "auroc": 0.8034433285509326, "sec": 15.2}
+{"spread": 0.4, "holdout": "V4", "method": "cdann_p", "seed": 1, "auroc": 0.7977044476327116, "sec": 15.9}

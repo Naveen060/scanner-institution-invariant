@@ -36,7 +36,7 @@ def main():
     X, df = load_covid_cxr(a.data)
     extra = {}
     for kv in a.set:
-        k, v = kv.split("="); extra[k] = type(getattr(TrainConfig, k))(v)
+        k, v = kv.split("="); extra[k] = (v.lower() in ("1", "true", "yes")) if isinstance(getattr(TrainConfig, k), bool) else type(getattr(TrainConfig, k))(v)
     for held in a.holdouts:
         src = df[df.site != held].reset_index(drop=True)
         for seed in a.seeds:

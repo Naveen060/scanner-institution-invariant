@@ -295,6 +295,12 @@ def synth_tables():
             dd = (g[g.method == k].set_index(key).auroc - base).dropna().values
             lo, hi = boot(dd); ds.append(f"{lab}: {dd.mean():+.3f} [{lo:+.3f}, {hi:+.3f}]")
             out[f"diff_{mx}_{k}"] = [float(dd.mean()), lo, hi]
+        for sp in sorted(d3.spread.unique()):  # point estimates at the other spreads (used for the no-label-shift sentence)
+            if sp == mx:
+                continue
+            g0 = d3[d3.spread == sp]; b0 = g0[g0.method == "erm"].set_index(key).auroc
+            for k, lab in names[1:]:
+                out[f"diff_{sp}_{k}"] = [float((g0[g0.method == k].set_index(key).auroc - b0).dropna().mean())]
         SUM["synth_label_shift"] = out
         open("paper/tables/synth_labelshift.tex", "w").write("\\begin{tabular}{lccccc c}\n\\toprule\nPrior spread & " + " & ".join(l for _, l in names) + " & Units \\\\\n\\midrule\n" + "\n".join(rows).replace("c c}", "cc}") + "\n\\bottomrule\n\\end{tabular}")
         SUM["synth_label_shift"]["paired_text"] = "; ".join(ds)
@@ -330,6 +336,13 @@ def synth_tables():
             r = S.loc[m]; cells.append(f"{r['cov']:.3f} ({r.mn:.3f}) / {r['size']:.2f}"); out[f"{sev}_{m}"] = [float(r["cov"]), float(r.mn), float(r["size"])]
         rows.append(f"{sev} & " + " & ".join(cells) + " \\\\")
     if rows:
+        short = []
+        for sev in ("0.5", "1.0", "1.5"):
+            if f"{sev}_pooled" not in out:
+                continue
+            c = lambda m: f"{out[f'{sev}_{m}'][0]:.3f} ({out[f'{sev}_{m}'][1]:.3f})"
+            short.append(f"{sev} & " + " & ".join(c(m) for m in ("pooled", "worst_site", "lso_split", "lso_cvplus")) + f" & {out[f'{sev}_pooled'][2]:.2f}/{out[f'{sev}_lso_cvplus'][2]:.2f} \\\\")
+        open("paper/tables/synth_conformal_short.tex", "w").write("\\begin{tabular}{lccccc}\n\\toprule\nSeverity & Pooled & Worst-site & LSO-split & LSO-CV+ & Size \\\\\n\\midrule\n" + "\n".join(short) + "\n\\bottomrule\n\\end{tabular}")
         SUM["synth_conformal"] = out
         open("paper/tables/synth_conformal.tex", "w").write("\\begin{tabular}{lcccccc}\n\\toprule\nSeverity & Pooled & Site-bal. & Worst-site & LSO-split & LSO-CV+ & LSO-worst \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
 
@@ -441,6 +454,18 @@ def emit_numbers():
         v = sl.get(f"diff_0.4_{k}")
         if v:
             add("synthDiff" + _name(k), v[0]); add("synthDiff" + _name(k) + "Lo", v[1]); add("synthDiff" + _name(k) + "Hi", v[2])
+    adv = [sl.get(f"diff_0.0_{k}") for k in ("dann", "cdann", "cdann_p")]
+    if all(adv):
+        loss = [-a[0] for a in adv]
+        add("synthNoShiftLossMin", min(loss)); add("synthNoShiftLossMax", max(loss))
+    sc = SUM.get("synth_conformal", {})
+    if sc:
+        pooled = [sc[f"{sv}_pooled"][0] for sv in ("0.5", "1.0", "1.5") if f"{sv}_pooled" in sc]
+        add("synthPooledCovMin", min(pooled)); add("synthPooledCovMax", max(pooled))
+        if "1.5_lso_split" in sc:
+            add("synthLsoSplitHighCov", sc["1.5_lso_split"][0]); add("synthLsoSplitHighMin", sc["1.5_lso_split"][1])
+        cv = [sc[f"{sv}_lso_cvplus"][0] for sv in ("0.5", "1.0", "1.5") if f"{sv}_lso_cvplus" in sc]
+        add("synthCvplusCovMin", min(cv)); add("synthCvplusCovMax", max(cv))
     if "rank_corr_dev_conf" in SUM:
         add("rankCorrDevConf", SUM["rank_corr_dev_conf"])
     for m, r in SUM.get("reliance", {}).items():
@@ -450,6 +475,20 @@ def emit_numbers():
         add("ensAurocFull", e["auroc_full"]); add("ensAurocEns", e["auroc_ens"]); add("ensDAuroc", e["d_auroc"])
         add("ensDAurocLo", e["d_auroc_ci"][0]); add("ensDAurocHi", e["d_auroc_ci"][1]); add("ensDEce", e["d_ece"])
         add("ensFoldsBetter", e["folds_ens_better_auroc"], "{}"); add("ensMembers", e["n_members"], "{}")
+    if os.path.exists("runs/compensate_check.json"):  # iteration 23: noise-compensated sharpness sensitivity (scripts/compensate_check.py)
+        c = json.load(open("runs/compensate_check.json"))
+        for tag, old_k, new_k in (("Phys", "site-profile aug (reported, uncompensated)", "site-profile aug (compensated sharpness)"),
+                                  ("Pai", "PAI (reported, uncompensated)", "PAI (compensated sharpness)")):
+            if old_k in c and new_k in c:
+                add("cmp" + tag + "OldDiff", c[old_k]["diff_vs_erm"]); add("cmp" + tag + "Diff", c[new_k]["diff_vs_erm"])
+                add("cmp" + tag + "Lo", c[new_k]["ci"][0]); add("cmp" + tag + "Hi", c[new_k]["ci"][1])
+                add("cmp" + tag + "Mean", c[new_k]["mean"]); add("cmp" + tag + "OldMean", c[old_k]["mean"])
+        if "leak" in c:
+            add("cmpLeakOld", c["leak"]["uncompensated"]["mean"]); add("cmpLeakNew", c["leak"]["compensated"]["mean"])
+        if os.path.exists("runs/conf_phys/results.jsonl"):
+            uk = [json.loads(l)["auroc"] for l in open("runs/conf_phys/results.jsonl") if json.loads(l)["method"] == "phys_aug" and json.loads(l)["holdout"] == "UK"]
+            if uk:
+                add("cmpUkLowSeed", min(uk))
     open("paper/numbers.tex", "w").write("\n".join(L) + "\n")
 
 
