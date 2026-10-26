@@ -182,7 +182,7 @@ def conformal_summary():
         if m in S.index:
             r = S.loc[m]
             rows.append(f"{names[m]} & {r.cov_mean:.3f} & {r.cov_min:.3f} & {int(r.n_under)}/{int(r.n)} & {r['size']:.2f} & {r.cov_calib_err:.3f} & {r.frac_under:.3f} & {r.size_at_cov90:.2f} \\\\")
-    tex = ("\\begin{tabular}{lccccccc}\n\\toprule\nCalibration & Cov. & Min cov. & Folds $<$0.85 & Size & Cov.\\ calib.\\ err. & Frac.\\ under & Size@90\\% \\\\\n\\midrule\n"
+    tex = ("\\begin{tabular}{lccccccc}\n\\toprule\nCalibration & Cov. & Min cov. & Sites $<$0.85 & Size & Cov.\\ calib.\\ err. & Frac.\\ under & Size@90\\% \\\\\n\\midrule\n"
            + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
     open("paper/tables/conformal.tex", "w").write(tex)
     SUM["conformal_alpha0.1"] = {m: {k: (float(v) if not isinstance(v, (int, np.integer)) else int(v)) for k, v in S.loc[m].items()} for m in S.index}
@@ -240,8 +240,13 @@ def optimism():
     finish(fig, "fig_optimism")
 
 
+# Semisynthetic runs: "_nr" = repeated without reusing source radiographs across virtual sites (iteration 22, reported);
+# set SYNTH_RUNS= (empty) to regenerate the original numbers of iterations 3, 4 and 7.
+SYN_SUFFIX = os.environ.get("SYNTH_RUNS", "_nr")
+
+
 def synth():
-    path = "runs/it3/results.jsonl"
+    path = f"runs/it3{SYN_SUFFIX}/results.jsonl"
     if not os.path.exists(path):
         return
     d = pd.DataFrame([json.loads(l) for l in open(path)])
@@ -254,7 +259,7 @@ def synth():
         axs[0].errorbar(t.index, t[m], yerr=sd[m] / np.sqrt(6), marker="o", ms=4, capsize=2, label=names[m], lw=1)
     axs[0].set_xlabel("Prior spread across virtual sites"); axs[0].set_ylabel("Held-out AUROC"); axs[0].legend(fontsize=FS(6)); title(axs[0], "Label-shift sweep (adv. weight 0.5)", fontsize=FS(9))
     rows = []
-    for tag, lam in [("runs/it3", 0.5), ("runs/it4_l01", 0.1), ("runs/it4_l002", 0.02)]:
+    for tag, lam in [(f"runs/it3{SYN_SUFFIX}", 0.5), (f"runs/it4{SYN_SUFFIX}_l01", 0.1), (f"runs/it4{SYN_SUFFIX}_l002", 0.02)]:
         f = f"{tag}/results.jsonl"
         if os.path.exists(f):
             x = pd.DataFrame([json.loads(l) for l in open(f)]); x = x[x.spread == 0.4]; x["lam"] = lam; rows.append(x)
@@ -270,7 +275,7 @@ def synth_tables():
     """Semi-synthetic benchmark tables: label-shift sweep, adversary-weight sweep, LSO conformal by severity."""
     def L(path):
         return pd.DataFrame([json.loads(l) for l in open(path)]) if os.path.exists(path) else pd.DataFrame()
-    d3 = L("runs/it3/results.jsonl")
+    d3 = L(f"runs/it3{SYN_SUFFIX}/results.jsonl")
     if len(d3):
         names = [("erm", "ERM"), ("erm_p", "ERM+prior"), ("dann", "DANN"), ("cdann", "cDANN"), ("cdann_p", "cDANN+prior")]
         rows = []
@@ -295,7 +300,7 @@ def synth_tables():
         SUM["synth_label_shift"]["paired_text"] = "; ".join(ds)
     # adversary weight sweep
     parts = []
-    for tag, lam in (("runs/it4_l002", 0.02), ("runs/it4_l01", 0.1), ("runs/it3", 0.5)):
+    for tag, lam in ((f"runs/it4{SYN_SUFFIX}_l002", 0.02), (f"runs/it4{SYN_SUFFIX}_l01", 0.1), (f"runs/it3{SYN_SUFFIX}", 0.5)):
         x = L(f"{tag}/results.jsonl")
         if len(x):
             x["lam"] = lam; parts.append(x)
@@ -314,7 +319,7 @@ def synth_tables():
     # LSO conformal by severity
     rows = []; out = {}
     for sev in ("0.5", "1.0", "1.5"):
-        f = f"runs/it7_sev{sev}_conformal.csv"
+        f = f"runs/it7{SYN_SUFFIX}_sev{sev}_conformal.csv"
         if not os.path.exists(f):
             continue
         D = pd.read_csv(f); d = D[np.isclose(D.alpha, 0.1)]

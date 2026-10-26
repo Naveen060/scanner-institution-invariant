@@ -6,7 +6,7 @@ Code, frozen experiment logs and manuscripts. Two manuscripts are kept: the 8-pa
 
 Setting: open multi-source chest-radiograph benchmark (924 images, 10 sources, COVID-19 vs other), small CNN trained from scratch at 64x64 on CPU, eight held-out sites (4 development, 4 confirmation with frozen configs), two seeds.
 
-1. **Negative accuracy result.** None of nine methods (ERM, GroupDRO, DANN, generic augmentation, site-profile augmentation, profile-adversarial invariance, and three SIDL combinations) is significantly better than ERM at held-out-site AUROC (hierarchical paired bootstrap; all 95% intervals include 0; largest gains GroupDRO +0.015, SIDL-phys +0.011).
+1. **Negative accuracy result.** None of the eight methods compared with ERM (GroupDRO, DANN, generic augmentation, site-profile augmentation, profile-adversarial invariance, and three SIDL combinations) is significantly better than ERM at held-out-site AUROC (hierarchical paired bootstrap; all 95% intervals include 0; largest gains GroupDRO +0.015, SIDL-phys +0.011).
 2. **Label-free leak diagnostic.** Five acquisition statistics predict the diagnosis on held-out sites with AUROC 0.66.
 3. **Conformal prediction for unseen sites.** Seen-site validation overstates held-out AUROC by 0.118; pooled split-conformal sets cover 0.836 on average at a 0.90 target (4 of 8 sites more than 5 points short). A leave-site-out CV+ rule (sites as folds) leaves no site more than 5 points short at ~26% larger sets; all calibrations lie on one coverage-size curve.
 4. **Simulation realism.** Controlled simulated acquisition shift does not reproduce the real under-coverage.
@@ -17,7 +17,7 @@ Both manuscripts use the original title. It promises more than the evidence supp
 
 Frozen TorchXRayVision DenseNet-121 embeddings (224x224) with small trainable heads, five seeds, same development/confirmation protocol (settings frozen and two primary comparisons written down before the first confirmation run).
 
-5. **The negative result replicates.** No invariance head beats ERM on the embedding; GroupDRO is again the largest (+0.018 [-0.000, +0.039] over eight sites, uncorrected for nine comparisons); transductive site centring is significantly worse (-0.040).
+5. **The negative result replicates.** No invariance head beats ERM on the embedding; GroupDRO is again the largest (+0.018 [-0.000, +0.039] over eight sites, uncorrected for eight comparisons); transductive site centring is significantly worse (-0.040).
 6. **The conformal and optimism findings replicate.** Pooled coverage 0.834 (pretrained head) and 0.836 (ensemble) vs target 0.90, 5 of 8 sites more than 5 points short; LSO-CV+ 0.937 / 0.936 with none; seen-site validation optimism +0.115 (CNN +0.118).
 7. **Suggestive, not significant:** averaging five CNNs with five pretrained heads gave the best mean and worst-site AUROC (0.780 / 0.671 vs 0.727 / 0.595 for a single CNN; +0.053 [-0.013, +0.129]); same sign on development and confirmation folds, but every interval includes zero and on the confirmation folds the pretrained ensemble alone was as good.
 

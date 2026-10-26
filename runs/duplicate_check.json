@@ -1,0 +1,51 @@
+{
+ "0.99": {
+  "pairs": 17,
+  "cross_source": 1,
+  "same_patient_id": 1,
+  "cross_source_detail": [
+   [
+    "Italy",
+    "Figure1",
+    1,
+    1,
+    0.995
+   ]
+  ]
+ },
+ "0.98": {
+  "pairs": 18,
+  "cross_source": 1,
+  "same_patient_id": 2,
+  "cross_source_detail": [
+   [
+    "Italy",
+    "Figure1",
+    1,
+    1,
+    0.995
+   ]
+  ]
+ },
+ "0.95": {
+  "pairs": 27,
+  "cross_source": 2,
+  "same_patient_id": 5,
+  "cross_source_detail": [
+   [
+    "Italy",
+    "Figure1",
+    1,
+    1,
+    0.995
+   ],
+   [
+    "Other",
+    "Actualmed",
+    1,
+    1,
+    0.96
+   ]
+  ]
+ }
+}

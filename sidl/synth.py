@@ -37,8 +37,14 @@ def apply_site(x: torch.Tensor, p: dict, gen: torch.Generator) -> torch.Tensor:
 
 
 def make_virtual_sites(X: np.ndarray, y: np.ndarray, K: int = 5, prior_spread: float = 0.3, per_site: int = 140,
-                       seed: int = 0, size: int = 64, severity: float = 1.0):
-    """Returns (Xv uint8 [N,size,size], df[row,label,site,patient_id], true_params list)."""
+                       seed: int = 0, size: int = 64, severity: float = 1.0, strict: bool = False):
+    """Returns (Xv uint8 [N,size,size], df[row,label,site,patient_id], true_params list).
+
+    strict=False (the original behaviour, used for iterations 3, 4 and 7): when the pool of one class runs out, images are drawn
+    again from the whole class pool, so the same radiograph can appear at more than one virtual site (with a different transform
+    and noise draw). Measured over the settings used there, 14-23% of the images were such repeats.
+    strict=True (iteration 22): raise instead, so every source radiograph is used at most once (needs per_site <= about 141).
+    """
     rng = np.random.RandomState(seed)
     gen = torch.Generator().manual_seed(seed)
     pos, neg = np.where(y == 1)[0], np.where(y == 0)[0]
@@ -51,6 +57,8 @@ def make_virtual_sites(X: np.ndarray, y: np.ndarray, K: int = 5, prior_spread: f
         n_pos = int(round(per_site * priors[k])); n_neg = per_site - n_pos
         ip = pos[pp:pp + n_pos]; ineg = neg[nn:nn + n_neg]
         if len(ip) < n_pos or len(ineg) < n_neg:  # recycle if pool exhausted (different images get different noise draws)
+            if strict:
+                raise ValueError(f"class pool exhausted at virtual site {k}: lower per_site (now {per_site}) or the prior spread")
             ip = rng.choice(pos, n_pos, replace=False); ineg = rng.choice(neg, n_neg, replace=False)
         pp += n_pos; nn += n_neg
         idx = np.concatenate([ip, ineg])

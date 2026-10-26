@@ -34,6 +34,7 @@ def main():
     ap.add_argument("--set", nargs="*", default=[])
     ap.add_argument("--K", type=int, default=5)
     ap.add_argument("--per-site", type=int, default=160)
+    ap.add_argument("--strict", action="store_true", help="use every source image at most once across virtual sites")
     a = ap.parse_args()
     torch.set_num_threads(1)
     os.makedirs(a.out, exist_ok=True)
@@ -49,7 +50,7 @@ def main():
         k, v = kv.split("="); extra[k] = type(getattr(TrainConfig, k))(v)
     for spread in a.spreads:
         for seed in a.seeds:
-            Xv, df, params, priors = make_virtual_sites(X, y0, a.K, spread, a.per_site, seed)
+            Xv, df, params, priors = make_virtual_sites(X, y0, a.K, spread, a.per_site, seed, strict=a.strict)
             # profile recovery: estimated per-site profile means vs. true transform strength (Spearman over sites)
             s2i_all = {s: i for i, s in enumerate(sorted(df.site.unique()))}
             pr = SiteProfiles(a.K, 2).fit(ArrayDataset(Xv, df, s2i_all, 64))

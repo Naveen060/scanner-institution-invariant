@@ -16,13 +16,14 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--out", required=True); ap.add_argument("--severities", nargs="+", type=float, default=[0.5, 1.0, 1.5])
 ap.add_argument("--seeds", nargs="+", type=int, default=[0, 1]); ap.add_argument("--holdouts", nargs="+", default=["V0", "V2", "V4"])
 ap.add_argument("--spread", type=float, default=0.25); ap.add_argument("--epochs", type=int, default=12)
+ap.add_argument("--per-site", type=int, default=160); ap.add_argument("--strict", action="store_true")
 a = ap.parse_args(); torch.set_num_threads(1)
 X, df0 = load_covid_cxr()
 mk = lambda **kw: TrainConfig(backbone="small", pretrained=False, in_chans=1, modality="cxr", epochs=a.epochs, batch_size=64, lr=2e-3,
                               num_workers=0, device="cpu", amp=False, aug_p=0.0, **kw)
 for sev in a.severities:
     for seed in a.seeds:
-        Xv, df, params, priors = make_virtual_sites(X, df0.label.values, 5, a.spread, 160, seed, severity=sev)
+        Xv, df, params, priors = make_virtual_sites(X, df0.label.values, 5, a.spread, a.per_site, seed, severity=sev, strict=a.strict)
         for held in a.holdouts:
             fd = f"{a.out}/sev{sev}_full/{held}/erm/seed{seed}"
             if not os.path.exists(f"{fd}/preds.npz"):
