@@ -1,0 +1,16 @@
+running text: 4788 words, 18 paragraphs
+Flesch reading ease 49.8; Flesch-Kincaid grade 10.0 (vowel-group syllable heuristic)
+sentences 268: mean 18.2 words, sd 12.2, >35 words: 11, <8 words: 33
+hedge words per 1000: 4.6  (could:3, suggestive:2, seems:1, appear:1, appears:1, probably:1, unlikely:2, somewhat:1, roughly:1, about:9)
+most common sentence openers: The:53, We:25, A:13, Its:7, It:5, GroupDRO:5
+connector words: therefore:7, however:1
+5-grams repeated >=3 times: standard conformal sets under cover x3; against the five cnn ensemble x3; conformal sets under cover unseen x3; sets under cover unseen sites x3; more than five points short x3
+LanguageTool: 124 raw matches, 5 after dropping spelling/whitespace noise
+  [COVID_19] Did you mean “COVID-19” (= coronavirus)? | ...uts in chest radiography. Pneumonia and COVID19 classifiers rely on site and dataset ar...
+  [ADVERB_OR_HYPHENATED_ADJECTIVE] Make sure that the adjective ‘mean’ is correct. Possibly, it should be an adverb (typicall | ...ite statistics only. An ensemble is the mean predicted probability of the models named, and th...
+  [UH_UH_COMMA] Consider adding a comma between these interjections. | ....514). B. No method significantly beats ERM ERM reached an AUROC of 0.758 on the develo...
+  [IT_IS_2] Did you mean “it's” (short for ‘it is’ or ‘it has’) instead of ‘its’ (possessive pronoun)? | ... at Actualmed, Italy, and UK (Fig. 3a). Its standing against the CNN also differs b...
+  [EN_UNPAIRED_QUOTES] Unpaired symbol: ‘“’ seems to be missing | ...ive-CNN ensemble the difference is helps” from “pretraining helps”. Seed averagin...
+spelling flags (mostly technical terms): AUROC:23, GroupDRO:12, DANN:6, SIDL:4, PAI:4, SIDL-phys:3, centring:3, Actualmed:3, cDANN:3, LOSO:2, Pk:2, SIDL-cc:2, SIDL-full:2, ReLU:2, AdamW:2, pθ:2, NTRODUCTION:1, ORK:1, MixStyle:1, DomainBed:1, BigAug:1, ComBat:1, ETHODS:1, Ladv:1, dy:1
+proselint: 1 output lines
+  /tmp/tmp667bnki2.txt:8:988: lexical_illusions: There's a lexical illusion in 'ERM ERM' - a phrase is repeated.

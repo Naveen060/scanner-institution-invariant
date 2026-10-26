@@ -1,0 +1,12 @@
+\begin{tabular}{llccc}
+\toprule
+Model & Calibration & Coverage [95\% CI] & Non-COVID & COVID \\
+\midrule
+CNN & Pooled (seen-site val.) & 0.836 [0.784, 0.890] & 0.741 & 0.902 \\
+ & LSO-CV+ & 0.942 [0.908, 0.971] & 0.906 & 0.983 \\\addlinespace
+Pretrained head & Pooled (seen-site val.) & 0.834 [0.786, 0.883] & 0.745 & 0.915 \\
+ & LSO-CV+ & 0.937 [0.902, 0.968] & 0.879 & 0.985 \\\addlinespace
+CNN + pretrained & Pooled (seen-site val.) & 0.836 [0.798, 0.876] & 0.747 & 0.926 \\
+ & LSO-CV+ & 0.936 [0.897, 0.972] & 0.876 & 0.990 \\\addlinespace
+\bottomrule
+\end{tabular}

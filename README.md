@@ -1,6 +1,6 @@
 # Scanner- and institution-invariant diagnosis: a leave-site-out study
 
-Code, frozen experiment logs and manuscripts. Two manuscripts are kept: the 8-page single-column version *Scanner-Invariant and Institution-Invariant Deep Learning for Reliable Medical Image Diagnosis Across Heterogeneous Clinical Environments* (`paper/main.pdf`, CNN results only) and the IEEE two-column version *Does Site Invariance Help at Unseen Hospitals? A Frozen Leave-Site-Out and Conformal Evaluation on Chest Radiographs* (`paper/ieee/main.pdf`), which adds a second, pretrained-encoder family (iterations 11-17).
+Code, frozen experiment logs and manuscripts. Two manuscripts are kept: the 8-page single-column version *Scanner-Invariant and Institution-Invariant Deep Learning for Reliable Medical Image Diagnosis Across Heterogeneous Clinical Environments* (`paper/main.pdf`, CNN results only) and the IEEE two-column version *Does Site Invariance Help at Unseen Hospitals? A Frozen Leave-Site-Out and Conformal Evaluation on Chest Radiographs* (`paper/ieee/main.pdf`), which adds a second, pretrained-encoder family (iterations 11-17) and the robustness checks of iterations 19-20.
 
 ## What this project found (all numbers are produced by `scripts/final_report.py` from `runs/`)
 
@@ -21,6 +21,14 @@ Frozen TorchXRayVision DenseNet-121 embeddings (224x224) with small trainable he
 6. **The conformal and optimism findings replicate.** Pooled coverage 0.834 (pretrained head) and 0.836 (ensemble) vs target 0.90, 5 of 8 sites more than 5 points short; LSO-CV+ 0.937 / 0.936 with none; seen-site validation optimism +0.115 (CNN +0.118).
 7. **Suggestive, not significant:** averaging five CNNs with five pretrained heads gave the best mean and worst-site AUROC (0.780 / 0.671 vs 0.727 / 0.595 for a single CNN; +0.053 [-0.013, +0.129]); same sign on development and confirmation folds, but every interval includes zero and on the confirmation folds the pretrained ensemble alone was as good.
 
+### Round 3: reviewer-style checks and a plainer manuscript (iterations 19-20)
+
+8. **The coverage shortfall is statistically real and lives in one class.** Hierarchical bootstrap 95% intervals for mean pooled coverage at a 0.90 target: CNN [0.784, 0.890], pretrained [0.786, 0.883], ensemble [0.798, 0.876]; LSO-CV+ intervals sit at or above 0.90. Under pooled calibration non-COVID images are covered 0.74-0.75 and COVID images 0.90-0.93.
+9. **Two earlier hints were weaker than they looked.** Without the two tiny test sets (China: 5 negatives, Australia: 6 positives) the CNN GroupDRO gain is 0.000 [-0.026, +0.024] and the ensemble's lead over a single CNN falls from +0.053 to +0.012 [-0.041, +0.065]. Pretrained-head GroupDRO is +0.025 [+0.005, +0.049] on those six sites (a post hoc subset).
+10. **Nothing survives multiple-comparison correction.** Eleven second-study comparisons: smallest raw p 0.028 (site centering, worse than ERM), GroupDRO 0.052; smallest Holm-adjusted p 0.31.
+
+The IEEE manuscript was rewritten in plainer prose (research questions up front, SIDL defined, number-heavy paragraphs moved into tables, practical-guidance and threats-to-validity subsections); `scripts/text_checks.py` runs LanguageTool and a readability report on the compiled PDF. Grammarly, QuillBot and iThenticate could not be used here; the similarity-risk advice is in `paper/ieee/SUBMISSION_CHECKLIST.md`.
+
 ## Layout
 
 | Path | Purpose |
@@ -35,6 +43,8 @@ Frozen TorchXRayVision DenseNet-121 embeddings (224x224) with small trainable he
 | `scripts/final_report.py` | regenerates every table, figure and number macro in the single-column paper |
 | `scripts/extract_xrv_features.py`, `sidl/featheads.py`, `scripts/run_feat_loso.py`, `scripts/run_feat_lso_conformal.py` | round 2: frozen pretrained embeddings, feature-space training heads, leave-one-site-out and leave-site-out conformal runners |
 | `scripts/feat_compare.py`, `scripts/round2_report.py`, `scripts/make_ensemble_runs.py`, `scripts/feat_diagnostics.py`, `scripts/round2_tables.py` | round 2: paired comparisons, ensemble builder (feeds `analyze_lso_conformal.py`), embedding diagnostics, and the tables, figure and `paper/numbers_r2.tex` for the IEEE paper |
+| `scripts/reviewer_checks.py` | robustness checks: bootstrap intervals and per-class conformal coverage, six-site sensitivity, Holm-adjusted p-values (writes `runs/reviewer_checks.{txt,json}`) |
+| `scripts/text_checks.py` | prose checks on the compiled PDF (LanguageTool, readability, repetition); not part of the scientific pipeline |
 | `paper/ieee/` | IEEE manuscript (`main.tex`, `refs.bib`) and `SUBMISSION_CHECKLIST.md` |
 | `runs/it*.sh` | the exact launch commands for each iteration |
 | `experiments/ITERATIONS.md` | log of every iteration, including failures |
@@ -58,7 +68,7 @@ python scripts/build_covid_cxr.py --root /path/to/repos --size 224 --out data/co
 pip install torchxrayvision
 python scripts/extract_xrv_features.py
 python scripts/run_feat_loso.py --out runs/it11 --methods erm erm_linear --seeds 0 1 2 3 4 --holdouts Actualmed Italy China Spain
-python scripts/round2_report.py && python scripts/round2_tables.py
+python scripts/round2_report.py && python scripts/reviewer_checks.py && python scripts/round2_tables.py
 cd paper/ieee && pdflatex main && bibtex main && pdflatex main && pdflatex main
 ```
 
@@ -74,6 +84,6 @@ cd paper/ieee && pdflatex main && bibtex main && pdflatex main && pdflatex main
 
 - The iteration-1 *augmentation* numbers (e.g. generic augmentation 0.675 AUROC) came from an earlier whole-batch augmentation implementation that was replaced in iteration 2; they are logged but not reproducible with the final code. The final tables use iteration 1 only for the augmentation-free baselines (ERM, GroupDRO, DANN).
 - Single modality; small, shortcut-prone, retrospective data; from-scratch 64x64 CNN (two seeds) and, in round 2, a frozen pretrained encoder (five seeds, not fine-tuned); no private data used.
-- Round 2: the CNN confirmation results were known before the pretrained family was designed; overlap between benchmark images and the encoder's pretraining collections was not checked; comparisons among nine heads and three ensembles are not multiplicity-corrected.
+- Round 2: the CNN confirmation results were known before the pretrained family was designed; overlap between benchmark images and the encoder's pretraining collections was not checked; the intervals in the tables are not multiplicity-corrected (Holm-adjusted p-values over the eleven second-study comparisons are in iteration 19; none is significant).
 - Leave-site-out conformal rules have no finite-sample guarantee under site shift; coverage is measured empirically.
 - Novelty statements in the paper are hedged: related work was searched, not systematically reviewed. Worst-site conformal calibration is an existing idea.

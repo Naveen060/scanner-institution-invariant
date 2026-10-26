@@ -1,0 +1,48 @@
+== 1. coverage at alpha=0.1 (target 0.90): mean over 8 sites [hier. bootstrap 95% CI]; share of replicates >= 0.90
+  CNN        pooled     0.836 [0.784, 0.890]  P(>=0.90)=0.010 | other 0.741 covid 0.902 | 6 large sites 0.849
+  CNN        worst-site 0.904 [0.845, 0.954]  P(>=0.90)=0.562 | other 0.837 covid 0.954 | 6 large sites 0.895
+  CNN        LSO-split  0.905 [0.846, 0.953]  P(>=0.90)=0.589 | other 0.845 covid 0.971 | 6 large sites 0.892
+  CNN        LSO-CV+    0.942 [0.908, 0.971]  P(>=0.90)=0.992 | other 0.906 covid 0.983 | 6 large sites 0.947
+  Pretrained pooled     0.834 [0.786, 0.883]  P(>=0.90)=0.007 | other 0.745 covid 0.915 | 6 large sites 0.829
+  Pretrained worst-site 0.890 [0.850, 0.929]  P(>=0.90)=0.312 | other 0.835 covid 0.943 | 6 large sites 0.888
+  Pretrained LSO-split  0.894 [0.855, 0.930]  P(>=0.90)=0.384 | other 0.834 covid 0.945 | 6 large sites 0.888
+  Pretrained LSO-CV+    0.937 [0.902, 0.968]  P(>=0.90)=0.978 | other 0.879 covid 0.985 | 6 large sites 0.935
+  Ensemble   pooled     0.836 [0.798, 0.876]  P(>=0.90)=0.003 | other 0.747 covid 0.926 | 6 large sites 0.836
+  Ensemble   worst-site 0.889 [0.841, 0.932]  P(>=0.90)=0.324 | other 0.811 covid 0.950 | 6 large sites 0.890
+  Ensemble   LSO-split  0.904 [0.852, 0.947]  P(>=0.90)=0.580 | other 0.846 covid 0.966 | 6 large sites 0.892
+  Ensemble   LSO-CV+    0.936 [0.897, 0.972]  P(>=0.90)=0.965 | other 0.876 covid 0.990 | 6 large sites 0.937
+
+== 2. accuracy comparisons without China and Australia (6 sites)
+  CNN GroupDRO                   -0.000 [-0.026, +0.024]
+  CNN DANN                       -0.025 [-0.073, +0.014]
+  CNN Generic aug.               -0.005 [-0.029, +0.023]
+  CNN Site-profile aug.          -0.016 [-0.085, +0.020]
+  CNN Profile adversary (PAI)    -0.003 [-0.022, +0.014]
+  CNN SIDL-cc                    -0.027 [-0.073, +0.014]
+  CNN SIDL-phys                  -0.003 [-0.023, +0.015]
+  CNN SIDL-full                  -0.006 [-0.049, +0.035]
+  Pre - CNN: -0.039 [-0.123, +0.045]
+  Ens - CNN: +0.012 [-0.041, +0.065]
+  Ens - CnnEns: -0.006 [-0.060, +0.045]
+  feature head groupdro   - ERM: +0.025 [+0.005, +0.049]
+  feature head erm_p      - ERM: -0.005 [-0.017, +0.008]
+  feature head dann       - ERM: +0.002 [-0.018, +0.026]
+  feature head cdann      - ERM: +0.003 [-0.015, +0.022]
+  feature head cdann_p    - ERM: -0.028 [-0.079, +0.007]
+  feature head coral      - ERM: -0.003 [-0.017, +0.009]
+  feature head cc_full    - ERM: -0.004 [-0.030, +0.015]
+  feature head sitecenter - ERM: -0.037 [-0.081, +0.008]
+  worst site (6 sites): CNN 0.628  pretrained 0.619  ensemble 0.671
+
+== 3. multiplicity
+  feat_sitecenter    raw p=0.028  Holm p=0.308
+  feat_groupdro      raw p=0.052  Holm p=0.520
+  Ens-CNN            raw p=0.131  Holm p=1.000
+  feat_cdann_p       raw p=0.161  Holm p=1.000
+  feat_erm_p         raw p=0.282  Holm p=1.000
+  Ens-CnnEns         raw p=0.320  Holm p=1.000
+  feat_cc_full       raw p=0.510  Holm p=1.000
+  Pre-CNN            raw p=0.689  Holm p=1.000
+  feat_dann          raw p=0.805  Holm p=1.000
+  feat_coral         raw p=0.867  Holm p=1.000
+  feat_cdann         raw p=0.884  Holm p=1.000

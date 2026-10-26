@@ -271,3 +271,25 @@ all 8 sites, alpha = 0.1: pooled 0.836 / 0.773 / 5 of 8 / 1.29; site-balanced 0.
 - Housekeeping found while consolidating: the three extra CNN ERM seeds had been written into the folders the single-column paper reads (runs/it1, runs/conf_erm), which would have changed its ERM numbers; they were moved to runs/cnn_extra and the original report was re-run: all tables and number macros unchanged.
 - Figures regenerated with embedded TrueType fonts (no Type 3) and a column-sized optimism figure; numbers unchanged.
 - Not done (environment limits): a second public multi-site dataset (hosts blocked), fine-tuning the encoder, checking overlap between the benchmark and the encoder's pretraining images.
+
+## Iteration 19 - reviewer-style robustness checks (scripts/reviewer_checks.py -> runs/reviewer_checks.json, runs/reviewer_checks.txt; descriptive, nothing earlier was changed)
+1. Is the under-coverage more than noise? Hierarchical bootstrap (sites, then images; 3000 reps; seeds 0-1 averaged), mean coverage over 8 sites at alpha = 0.1, target 0.90:
+   pooled: CNN 0.836 [0.784, 0.890], pretrained 0.834 [0.786, 0.883], ensemble 0.836 [0.798, 0.876]; fraction of replicates >= 0.90: 0.010 / 0.007 / 0.003.
+   LSO-CV+: CNN 0.942 [0.908, 0.971], pretrained 0.937 [0.902, 0.968], ensemble 0.936 [0.897, 0.972].
+   Worst-site and LSO-split intervals contain 0.90 (e.g. CNN worst-site 0.904 [0.845, 0.954]).
+   -> pooled under-coverage is statistically distinguishable from the target in all three model families; LSO-CV+ is above it.
+2. Coverage by class (mean over sites with >= 5 images of the class), pooled: non-COVID images 0.741 (CNN) / 0.745 (pretrained) / 0.747 (ensemble), COVID images 0.902 / 0.915 / 0.926.
+   LSO-CV+: non-COVID 0.906 / 0.879 / 0.876, COVID 0.983 / 0.985 / 0.990. The marginal shortfall is concentrated in the non-COVID class.
+3. Sensitivity to the two smallest test sets (China: 5 negatives; Australia: 6 positives), 6 remaining sites:
+   CNN methods vs ERM: all within [-0.027, 0.000] (GroupDRO -0.000 [-0.026, +0.024] vs +0.015 on 8 sites): the CNN GroupDRO gain came from the two tiny sites.
+   Pretrained GroupDRO vs ERM: +0.025 [+0.005, +0.049] (8 sites: +0.018 [-0.000, +0.039]). A post hoc subset and one of eleven comparisons; Holm-adjusted p over the eleven pre-listed comparisons is 0.52 (raw 0.052).
+   Ensemble minus single CNN: +0.012 [-0.041, +0.065] (8 sites: +0.053): most of the ensemble's advantage came from the two tiny sites (largest on Australia, 0.595 -> 0.836). Worst site on 6 sites: CNN 0.628, pretrained 0.619, ensemble 0.671.
+   -> the ensemble result is weaker than the 8-site summary suggests; the manuscript says so.
+4. Multiplicity (11 two-sided bootstrap p-values: 8 pretrained heads vs ERM, ensemble vs CNN, ensemble vs five-CNN ensemble, pretrained vs CNN): smallest raw p 0.028 (site centring, the worse direction), then GroupDRO 0.052; after Holm correction the smallest is 0.31. Nothing survives correction.
+
+## Iteration 20 - manuscript rewrite for readability (no new experiments; text and presentation only)
+Changes to paper/ieee/main.tex: the Introduction now states four research questions; SIDL is defined where it first appears; "iteration N" wording is gone from the text (the log keeps it); number-heavy paragraphs point to the tables; a robustness subsection reports iteration 19; a practical-guidance subsection and a threats-to-validity subsection (internal, external, construct) replace the single Limitations paragraph; the two claims that iteration 19 weakened (CNN GroupDRO gain, size of the ensemble's lead) are stated as weakened in the abstract, results and discussion.
+Prose checks (scripts/text_checks.py on the compiled PDF, LanguageTool 6.8 offline plus a vowel-group readability estimate; Grammarly, QuillBot, iThenticate and Turnitin were not available):
+  before: mean sentence length 22.8 words, 27 sentences over 35 words, Flesch-Kincaid grade 11.6 (heuristic), 8 LanguageTool flags after dropping spelling noise;
+  after:  mean 18.2 words, 11 sentences over 35 words, grade 10.0, 5 flags, all of them false positives or PDF-extraction artefacts (a line-break hyphen in COVID-19, a heading read as running text, a stray quote at a column break).
+Spelling changed to US ("centering", "semisynthetic"). No number changed except those added from iteration 19. Build: 10 pages, no undefined references, no Type 3 fonts.
