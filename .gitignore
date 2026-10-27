@@ -16,3 +16,6 @@ paper/ieee/*.blg
 paper/ieee/*.bbl
 runs/it16_*/
 runs/it15_all/
+
+# manuscript files are kept locally only, not in the repository
+paper/
